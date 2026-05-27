@@ -1,0 +1,21 @@
+{
+    "quizzes": [
+        {
+            "id": "system-integration",
+            "title": "System Integration",
+            "description": "70 questions.",
+            "tags": [
+                "Exam"
+            ]
+        },
+        {
+            "id": "sample",
+            "title": "Sample Quiz",
+            "description": "A small demo quiz showing all three question types. Use this as a reference when creating your own.",
+            "tags": [
+                "Demo",
+                "Template"
+            ]
+        }
+    ]
+}

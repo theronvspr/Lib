@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quizzes</title>
+    <meta name="description" content="Browse and take quizzes on various topics.">
+    <link rel="stylesheet" href="global.css">
+</head>
+
+<body>
+    <div class="root">
+        <div id="app">
+            <div class="idx-loading">Loading quizzes…</div>
+        </div>
+    </div>
+    <script>
+        const app = document.getElementById('app');
+
+        async function init() {
+            try {
+                const res = await fetch('quizzes/index.json');
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                const data = await res.json();
+                renderIndex(data.quizzes || []);
+            } catch (err) {
+                app.innerHTML = `
+                    <div class="idx-header">
+                        <div class="idx-title">Quizzes</div>
+                        <div class="idx-sub">Browse and take quizzes.</div>
+                    </div>
+                    <div class="idx-error">
+                        Failed to load quiz index. Browsers might block local file access (file://) for security.<br>
+                    </div>`;
+            }
+        }
+
+        function renderIndex(quizzes) {
+            if (quizzes.length === 0) {
+                app.innerHTML = `
+                    <div class="idx-header">
+                        <div class="idx-title">Quizzes</div>
+                        <div class="idx-sub">Browse and take quizzes.</div>
+                    </div>
+                    <div class="idx-empty">No quizzes found. Add one to <code>quizzes/</code> and update <code>quizzes/index.json</code>.</div>`;
+                return;
+            }
+
+            const cards = quizzes.map(q => {
+                const tags = (q.tags || []).map(t => `<span class="idx-tag">${t}</span>`).join('');
+                return `<a class="idx-card" href="quiz.html#quiz=${encodeURIComponent(q.id)}">
+                    <div class="idx-card-title">${q.title}</div>
+                    <div class="idx-card-desc">${q.description || ''}</div>
+                    ${tags ? `<div class="idx-card-meta">${tags}</div>` : ''}
+                </a>`;
+            }).join('');
+
+            app.innerHTML = `
+                <div class="idx-header">
+                    <div class="idx-title">Quizzes</div>
+                    <div class="idx-sub">Pick a quiz to get started.</div>
+                </div>
+                <div class="idx-grid">${cards}</div>`;
+        }
+
+        init();
+    </script>
+</body>
+
+</html>

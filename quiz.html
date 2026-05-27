@@ -1,0 +1,834 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz</title>
+    <meta name="description" content="Take a quiz and test your knowledge.">
+    <link rel="stylesheet" href="global.css">
+</head>
+
+<body>
+    <div class="root">
+        <div class="qz" id="app">
+            <div class="idx-loading">Loading quiz…</div>
+        </div>
+    </div>
+    <script>
+        // =============================================================================
+        // QUIZ ENGINE — loads questions from quizzes/<id>/quiz.json via ?quiz=<id>
+        // =============================================================================
+
+        const TYPE_META = {
+            "mc": { label: "Multiple Choice", desc: "Select the correct answer" },
+            "tf": { label: "True / False", desc: "Decide if the statement is correct" },
+            "id": { label: "Fill in the Blank", desc: "Type the missing word(s)" },
+            "enum": { label: "Enumeration", desc: "List all correct answers" },
+            "match": { label: "Matching", desc: "Pair corresponding items" }
+        };
+
+        let QS = [];
+        let QUIZ_TITLE = "Quiz";
+        let QUIZ_SUBTITLE = "Select question types to include, then start.";
+        let QUIZ_ID = '';
+
+        let state = {
+            screen: 'loading',
+            selTypes: new Set(),
+            shuffle: true,
+            infiniteMode: false,
+            quiz: [],
+            originalPool: [],
+            originalTotal: 0,
+            idx: 0,
+            answered: false,
+            skipped: false,
+            userAnswer: '',
+            results: [],
+            showReview: false,
+            justSubmitted: false,
+        };
+
+        // =============================================================================
+        // HELPERS
+        // =============================================================================
+
+        function shuffleArr(arr) {
+            let a = [...arr];
+            for (let i = a.length - 1; i > 0; i--) {
+                let j = Math.floor(Math.random() * (i + 1));
+                [a[i], a[j]] = [a[j], a[i]];
+            }
+            return a;
+        }
+
+        function getAvailableTypes() {
+            return [...new Set(QS.map(q => q.type))].filter(t => TYPE_META[t]);
+        }
+
+        function typeCount(t) { return QS.filter(q => q.type === t).length; }
+
+        function typeBadge(type) {
+            return TYPE_META[type] ? TYPE_META[type].label : type;
+        }
+
+        function checkAnswer(q, ua) {
+            const norm = s => s.trim().toLowerCase().replace(/[^a-z0-9\-\/\s]/g, '').replace(/\s+/g, ' ');
+            
+            if (q.type === 'enum') {
+                if (!Array.isArray(ua) || ua.length !== q.a.length) return false;
+                const results = gradeEnumInputs(q, ua);
+                return results.every(r => r === true);
+            } else if (q.type === 'match') {
+                if (!ua || typeof ua !== 'object') return false;
+                const keys = Object.keys(q.a);
+                if (keys.length === 0) return false;
+                for (const key of keys) {
+                    if (ua[key] !== q.a[key]) return false;
+                }
+                return true;
+            } else {
+                const u = norm(ua || '');
+                if (norm(q.a) === u) return true;
+                if (q.alt && q.alt.some(x => norm(x) === u)) return true;
+                return false;
+            }
+        }
+
+        function gradeEnumInputs(q, ua) {
+            const norm = s => s.trim().toLowerCase().replace(/[^a-z0-9\-\/\s]/g, '').replace(/\s+/g, ' ');
+            const normVal = val => norm(val || '');
+            const results = Array(ua.length).fill(false);
+            
+            if (q.ordered) {
+                for (let i = 0; i < ua.length; i++) {
+                    const uVal = normVal(ua[i]);
+                    const correctVal = normVal(q.a[i]);
+                    const matchPrimary = uVal === correctVal;
+                    let matchAlt = false;
+                    if (q.alt && Array.isArray(q.alt[i])) {
+                        matchAlt = q.alt[i].some(altOption => normVal(altOption) === uVal);
+                    }
+                    results[i] = matchPrimary || matchAlt;
+                }
+            } else {
+                const matchedSlots = new Set();
+                for (let i = 0; i < ua.length; i++) {
+                    const uVal = normVal(ua[i]);
+                    if (!uVal) continue;
+                    
+                    let foundMatch = false;
+                    for (let j = 0; j < q.a.length; j++) {
+                        if (matchedSlots.has(j)) continue;
+                        
+                        const correctVal = normVal(q.a[j]);
+                        const matchPrimary = uVal === correctVal;
+                        let matchAlt = false;
+                        if (q.alt && Array.isArray(q.alt[j])) {
+                            matchAlt = q.alt[j].some(altOption => normVal(altOption) === uVal);
+                        }
+                        if (matchPrimary || matchAlt) {
+                            matchedSlots.add(j);
+                            results[i] = true;
+                            break;
+                        }
+                    }
+                }
+            }
+            return results;
+        }
+
+        // =============================================================================
+        // DATA LOADING
+        // =============================================================================
+
+        async function init() {
+            const params = new URLSearchParams(window.location.search);
+            QUIZ_ID = params.get('quiz');
+
+            if (!QUIZ_ID && window.location.hash) {
+                const hash = window.location.hash.substring(1);
+                const hashParams = new URLSearchParams(hash);
+                QUIZ_ID = hashParams.get('quiz') || hash;
+            }
+
+            if (!QUIZ_ID) {
+                showError('No quiz specified. <a href="index.html" style="color:inherit;text-decoration:underline">Go back to the index</a>.');
+                return;
+            }
+
+            try {
+                const res = await fetch(`quizzes/${QUIZ_ID}/quiz.json`);
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                const data = await res.json();
+
+                if (!data.questions || !data.questions.length) {
+                    showError('This quiz has no questions.');
+                    return;
+                }
+
+                QS = data.questions;
+                QUIZ_TITLE = data.title || QUIZ_ID;
+                QUIZ_SUBTITLE = data.subtitle || "Select question types to include, then start.";
+                document.title = QUIZ_TITLE + " — Quiz";
+
+                state.selTypes = new Set(getAvailableTypes());
+                state.screen = 'setup';
+                render();
+            } catch (err) {
+                showError(`Failed to load quiz "<strong>${QUIZ_ID}</strong>". Make sure the file <code>quizzes/${QUIZ_ID}/quiz.json</code> exists and is valid JSON.<br>
+                    <a href="index.html" style="color:inherit;text-decoration:underline;margin-top:8px;display:inline-block">← Back to index</a>`);
+            }
+        }
+
+        function showError(msg) {
+            document.getElementById('app').innerHTML = `
+                <a class="quiz-back" href="index.html">← All quizzes</a>
+                <div class="idx-error">${msg}</div>`;
+        }
+
+        // =============================================================================
+        // QUIZ ENGINE
+        // =============================================================================
+
+        function startQuiz() {
+            let pool = QS.filter(q => state.selTypes.has(q.type));
+            if (state.shuffle) pool = shuffleArr(pool);
+            state.originalPool = pool.map(q => ({ ...q }));
+            state.originalTotal = pool.length;
+            state.quiz = pool; state.idx = 0; state.answered = false; state.skipped = false;
+            state.userAnswer = ''; state.results = []; state.showReview = false; state.justSubmitted = false;
+            state.screen = 'quiz'; render();
+        }
+
+        function doSkip() {
+            state.skipped = true;
+            state.results.push({ q: state.quiz[state.idx], ua: '', correct: false, skipped: true });
+            if (state.infiniteMode) requeueWrong();
+            render();
+        }
+
+        function doNext() {
+            if (state.idx < state.quiz.length - 1) {
+                state.idx++; state.answered = false; state.skipped = false;
+                state.userAnswer = ''; render();
+            } else {
+                state.screen = 'results'; render();
+            }
+        }
+
+        function requeueWrong() {
+            const q = state.quiz[state.idx];
+            const remaining = state.quiz.length - state.idx - 1;
+            if (remaining > 0) {
+                const insertAt = state.idx + 1 + Math.floor(Math.random() * remaining);
+                state.quiz.splice(insertAt, 0, { ...q });
+            } else {
+                state.quiz.push({ ...q });
+            }
+        }
+
+        // =============================================================================
+        // RENDER
+        // =============================================================================
+
+        function render() {
+            const app = document.getElementById('app');
+            if (state.screen === 'setup') { app.innerHTML = renderSetup(); bindSetup(); }
+            else if (state.screen === 'quiz') { app.innerHTML = renderQuiz(); bindQuiz(); }
+            else if (state.screen === 'results') { app.innerHTML = renderResults(); bindResults(); }
+        }
+
+        // ── Setup ──
+
+        function renderSetup() {
+            const types = getAvailableTypes();
+            const totalQ = QS.filter(q => state.selTypes.has(q.type)).length;
+            const tiles = types.map(t => {
+                const meta = TYPE_META[t];
+                const sel = state.selTypes.has(t);
+                const count = typeCount(t);
+                return `<div class="mod-tile${sel ? ' sel' : ''}" data-type="${t}">
+      <div class="mod-tile-name">${meta.label}</div>
+      <div class="mod-tile-meta">${meta.desc} · ${count}q</div>
+    </div>`;
+            }).join('');
+            return `<a class="quiz-back" href="index.html">← All quizzes</a>
+  <div class="setup-title">${QUIZ_TITLE}</div>
+  <div class="setup-sub">${QUIZ_SUBTITLE}</div>
+  <div class="section-label">Customize</div>
+  <div class="mod-grid">${tiles}</div>
+  <div class="sel-row">
+    <button class="sel-link" id="sel-all">Select all</button>
+    <button class="sel-link" id="sel-none">Deselect all</button>
+  </div>
+  <div class="shuffle-row">
+    <input type="checkbox" id="shuffle-chk" ${state.shuffle ? 'checked' : ''}>
+    <label for="shuffle-chk" class="shuffle-label">Shuffle questions</label>
+    <input type="checkbox" id="infinite-chk" style="margin-left:12px" ${state.infiniteMode ? 'checked' : ''}>
+    <label for="infinite-chk" class="shuffle-label">Infinite mode (requeue wrong answers)</label>
+  </div>
+  <button class="start-btn" id="start-btn" ${totalQ === 0 ? 'disabled' : ''}>Start${totalQ > 0 ? ' (' + totalQ + ' questions)' : ''}</button>`;
+        }
+
+        function bindSetup() {
+            document.querySelectorAll('.mod-tile').forEach(el => {
+                el.addEventListener('click', () => {
+                    const t = el.dataset.type;
+                    if (state.selTypes.has(t)) state.selTypes.delete(t); else state.selTypes.add(t);
+                    render();
+                });
+            });
+            document.getElementById('sel-all').addEventListener('click', () => { state.selTypes = new Set(getAvailableTypes()); render(); });
+            document.getElementById('sel-none').addEventListener('click', () => { state.selTypes = new Set(); render(); });
+            document.getElementById('shuffle-chk').addEventListener('change', e => { state.shuffle = e.target.checked; });
+            document.getElementById('infinite-chk').addEventListener('change', e => { state.infiniteMode = e.target.checked; });
+            const sb = document.getElementById('start-btn');
+            if (sb) sb.addEventListener('click', () => startQuiz());
+        }
+
+        // ── Quiz ──
+
+        function renderQuiz() {
+            const q = state.quiz[state.idx];
+            const total = state.infiniteMode ? state.quiz.length : state.originalTotal;
+            const answered = state.answered; const skipped = state.skipped;
+            const done = answered || skipped;
+            const pct = state.infiniteMode
+                ? (state.quiz.length > 1 ? Math.round((state.idx / state.quiz.length) * 100) : 0)
+                : Math.round((state.results.length / total) * 100);
+            const score = state.results.filter(r => r.correct).length;
+            let answerBlock = '';
+
+            if (q.type === 'tf') {
+                const ua = state.userAnswer; const correct = q.a;
+                let tC = '', fC = '';
+                if (answered) {
+                    if (ua === 'True') tC = ua === correct ? 'got-it' : 'got-wrong';
+                    if (ua === 'False') fC = ua === correct ? 'got-it' : 'got-wrong';
+                    if (ua !== correct) { if (correct === 'True') tC = 'reveal-right'; else fC = 'reveal-right'; }
+                } else if (skipped) {
+                    if (correct === 'True') tC = 'reveal-right'; else fC = 'reveal-right';
+                }
+                answerBlock = `<div class="tf-row">
+      <button class="tf-btn ${tC}" id="tf-true" ${done ? 'disabled' : ''}>True</button>
+      <button class="tf-btn ${fC}" id="tf-false" ${done ? 'disabled' : ''}>False</button>
+    </div>
+    ${!done ? `
+    <div style="margin-top: 12px; display: flex; justify-content: flex-start;">
+      <button class="id-skip" id="tf-skip" style="padding: 10px 16px;">Skip</button>
+    </div>` : ''}`;
+            } else if (q.type === 'mc') {
+                const ua = state.userAnswer; const correct = q.a;
+                answerBlock = `<div class="mc-list">` + q.choices.map((c, i) => {
+                    let cls = '';
+                    if (answered) {
+                        if (c === ua) cls = c === correct ? 'got-it' : 'got-wrong';
+                        else if (c === correct) cls = 'reveal-right';
+                    } else if (skipped) {
+                        if (c === correct) cls = 'reveal-right';
+                    }
+                    return `<button class="mc-btn ${cls}" data-choice="${c}" ${done ? 'disabled' : ''}>${c}</button>`;
+                }).join('') + `</div>
+                ${!done ? `
+                <div style="margin-top: 12px; display: flex; justify-content: flex-start;">
+                    <button class="id-skip" id="mc-skip" style="padding: 10px 16px;">Skip</button>
+                </div>` : ''}`;
+            } else if (q.type === 'enum') {
+                const orderText = q.ordered ? "Strict Order Required" : "Any Order Accepted";
+                const orderClass = q.ordered ? "ordered" : "unordered";
+                
+                if (!done) {
+                    answerBlock = `
+                    <div class="enum-info-bar ${orderClass}">${orderText}</div>
+                    <div class="enum-list">
+                        ${q.a.map((_, i) => `
+                            <div class="enum-row">
+                                <span class="enum-num">${i + 1}</span>
+                                <input class="enum-input" id="enum-inp-${i}" type="text" placeholder="Type answer ${i + 1}..." value="">
+                            </div>
+                        `).join('')}
+                    </div>
+                    <div class="enum-btns">
+                        <button class="enum-sub" id="enum-sub">Submit</button>
+                        <button class="enum-skip" id="enum-skip">Skip</button>
+                    </div>`;
+                } else {
+                    const ua = state.userAnswer || [];
+                    const graded = answered ? gradeEnumInputs(q, ua) : Array(q.a.length).fill(false);
+                    
+                    const norm = s => s.trim().toLowerCase().replace(/[^a-z0-9\-\/\s]/g, '').replace(/\s+/g, ' ');
+                    const normVal = val => norm(val || '');
+                    const matchedSlots = new Set();
+                    if (!q.ordered && answered) {
+                        for (let i = 0; i < ua.length; i++) {
+                            const uVal = normVal(ua[i]);
+                            if (!uVal) continue;
+                            for (let j = 0; j < q.a.length; j++) {
+                                if (matchedSlots.has(j)) continue;
+                                const correctVal = normVal(q.a[j]);
+                                const matchPrimary = uVal === correctVal;
+                                let matchAlt = false;
+                                if (q.alt && Array.isArray(q.alt[j])) {
+                                    matchAlt = q.alt[j].some(altOption => normVal(altOption) === uVal);
+                                }
+                                if (matchPrimary || matchAlt) {
+                                    matchedSlots.add(j);
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    
+                    const missingAnswers = q.a.filter((_, idx) => !matchedSlots.has(idx));
+                    
+                    answerBlock = `
+                    <div class="enum-info-bar ${orderClass}">${orderText}</div>
+                    <div class="enum-list">
+                        ${q.a.map((_, i) => {
+                            const val = ua[i] || '';
+                            const isCorrect = graded[i];
+                            let cls = '';
+                            let badge = '';
+                            if (answered) {
+                                cls = isCorrect ? 'got-it' : 'got-wrong';
+                                badge = isCorrect ? '✓' : '✗';
+                            } else {
+                                cls = 'skipped-input';
+                                badge = '✗';
+                            }
+                            
+                            let correction = '';
+                            if (q.ordered && !isCorrect) {
+                                correction = `<div class="enum-correction">Expected: <strong>${q.a[i]}</strong></div>`;
+                            }
+                            
+                            return `
+                            <div class="enum-row-display ${cls}">
+                                <div class="enum-row-header">
+                                    <span class="enum-num-badge">${i + 1}</span>
+                                    <span class="enum-user-val">${val ? val.replace(/"/g, '&quot;') : '<em>[No answer]</em>'}</span>
+                                    <span class="enum-status-badge">${badge}</span>
+                                </div>
+                                ${correction}
+                            </div>`;
+                        }).join('')}
+                    </div>`;
+                    
+                    if (!q.ordered && missingAnswers.length > 0) {
+                        answerBlock += `
+                        <div class="enum-missing-card">
+                            <div class="enum-missing-title">Expected / missing answers:</div>
+                            <div class="enum-missing-list">
+                                ${missingAnswers.map(ans => `<span class="enum-missing-item">${ans}</span>`).join('')}
+                            </div>
+                        </div>`;
+                    }
+                }
+            } else if (q.type === 'match') {
+                if (!state.matchingState || state.matchingState.qIndex !== state.idx) {
+                    const left = Object.keys(q.a);
+                    const right = shuffleArr(Object.values(q.a));
+                    state.matchingState = {
+                        qIndex: state.idx,
+                        left,
+                        right,
+                        pairs: {},
+                        activeLeft: left[0]
+                    };
+                }
+                
+                const ms = state.matchingState;
+                
+                if (!done) {
+                    const leftCol = ms.left.map(lk => {
+                        const matchedVal = ms.pairs[lk];
+                        const isActive = ms.activeLeft === lk;
+                        let cls = 'match-left-item';
+                        if (isActive) cls += ' active';
+                        if (matchedVal) cls += ' matched';
+                        
+                        return `
+                        <div class="${cls}" data-key="${lk.replace(/"/g, '&quot;')}">
+                            <div class="match-left-prompt">${lk}</div>
+                            <div class="match-left-slot">
+                                ${matchedVal 
+                                    ? `<span class="match-docked-val">${matchedVal} <button class="match-clear-btn" data-key="${lk.replace(/"/g, '&quot;')}">×</button></span>`
+                                    : `<span class="match-slot-placeholder">Select option...</span>`}
+                            </div>
+                        </div>`;
+                    }).join('');
+                    
+                    const rightCol = ms.right.map(rv => {
+                        const isUsed = Object.values(ms.pairs).includes(rv);
+                        let cls = 'match-right-item';
+                        if (isUsed) cls += ' used';
+                        
+                        return `<button class="${cls}" data-val="${rv.replace(/"/g, '&quot;')}" ${isUsed ? 'disabled' : ''}>${rv}</button>`;
+                    }).join('');
+                    
+                    answerBlock = `
+                    <div class="match-instructions">Tap a left prompt to select, then tap a right option to pair them.</div>
+                    <div class="match-board">
+                        <div class="match-col-left">
+                            <div class="match-col-title">Prompts</div>
+                            ${leftCol}
+                        </div>
+                        <div class="match-col-right">
+                            <div class="match-col-title">Options</div>
+                            ${rightCol}
+                        </div>
+                    </div>
+                    <div class="match-btns">
+                        <button class="match-sub" id="match-sub" ${Object.keys(ms.pairs).length === ms.left.length ? '' : 'disabled'}>Submit</button>
+                        <button class="match-skip" id="match-skip">Skip</button>
+                    </div>`;
+                } else {
+                    const ua = state.userAnswer || {};
+                    const leftKeys = Object.keys(q.a);
+                    
+                    const matchesDisplay = leftKeys.map((lk, i) => {
+                        const userVal = ua[lk] || '';
+                        const correctVal = q.a[lk];
+                        const isCorrect = userVal === correctVal;
+                        
+                        let cls = '';
+                        let badge = '';
+                        if (answered) {
+                            cls = isCorrect ? 'got-it' : 'got-wrong';
+                            badge = isCorrect ? '✓' : '✗';
+                        } else {
+                            cls = 'skipped-input';
+                            badge = '✗';
+                        }
+                        
+                        let correction = '';
+                        if (!isCorrect) {
+                            correction = `<div class="match-correct-reveal">Expected: <strong>${correctVal}</strong></div>`;
+                        }
+                        
+                        return `
+                        <div class="match-result-row ${cls}">
+                            <div class="match-res-header">
+                                <span class="match-res-prompt"><strong>${lk}</strong></span>
+                                <span class="match-res-arrow">➔</span>
+                                <span class="match-res-val">${userVal ? userVal : '<em>[Unmatched]</em>'}</span>
+                                <span class="match-res-badge">${badge}</span>
+                            </div>
+                            ${correction}
+                        </div>`;
+                    }).join('');
+                    
+                    answerBlock = `
+                    <div class="match-results-list">
+                        ${matchesDisplay}
+                    </div>`;
+                }
+            } else {
+                answerBlock = `<div class="id-row">
+      <input class="id-input" id="id-inp" type="text" placeholder="Type your answer..." ${done ? 'disabled' : ''} value="${state.userAnswer ? state.userAnswer.replace(/"/g, '&quot;') : ''}">
+      <div class="id-btns">
+        <button class="id-sub" id="id-sub" ${done ? 'disabled' : ''}>Submit</button>
+        ${!done ? `<button class="id-skip" id="id-skip">Skip</button>` : ''}
+      </div>
+    </div>`;
+            }
+
+            let feedback = '';
+            if (skipped) {
+                if (q.type === 'enum') {
+                    feedback = `<div class="feedback skipped">Skipped. See correct answers above.</div>`;
+                } else if (q.type === 'match') {
+                    feedback = `<div class="feedback skipped">Skipped. See correct pairings above.</div>`;
+                } else {
+                    feedback = `<div class="feedback skipped">Skipped. Correct answer: <strong>${q.a}</strong></div>`;
+                }
+            } else if (answered) {
+                const correct = checkAnswer(q, state.userAnswer);
+                if (q.type === 'enum') {
+                    feedback = correct
+                        ? `<div class="feedback ok">Correct!</div>`
+                        : `<div class="feedback no">Incorrect. See corrections above.${state.infiniteMode ? ' · This question will come back!' : ''}</div>`;
+                } else if (q.type === 'match') {
+                    feedback = correct
+                        ? `<div class="feedback ok">Correct!</div>`
+                        : `<div class="feedback no">Incorrect. See correct pairings above.${state.infiniteMode ? ' · This question will come back!' : ''}</div>`;
+                } else {
+                    feedback = correct
+                        ? `<div class="feedback ok">Correct!</div>`
+                        : `<div class="feedback no">Incorrect. Correct answer: <strong>${q.a}</strong>${state.infiniteMode ? ' · This question will come back!' : ''}</div>`;
+                }
+            }
+
+            const isLast = state.idx >= state.quiz.length - 1 && done;
+            const nextLabel = isLast ? 'See results' : 'Next';
+
+            return `<div class="prog-bar-track"><div class="prog-bar-fill" style="width:${pct}%"></div></div>
+  <div class="q-header">
+    <span class="q-badge">${typeBadge(q.type)}</span>
+    <span class="q-score">Score: ${score}/${state.results.length}</span>
+  </div>
+  <div class="q-card">
+    <div class="q-num">Question ${state.results.length + 1} of ${total}</div>
+    <div class="q-text">${q.t}</div>
+    ${answerBlock}
+    ${feedback}
+  </div>
+  ${done ? `<div class="next-row"><button class="next-btn" id="next-btn">${nextLabel} →</button></div>` : ''}`;
+        }
+
+        function bindQuiz() {
+            const q = state.quiz[state.idx];
+            const done = state.answered || state.skipped;
+
+            if (q.type === 'tf' && !done) {
+                ['tf-true', 'tf-false'].forEach(id => {
+                    const el = document.getElementById(id);
+                    if (el) el.addEventListener('click', () => {
+                        const val = id === 'tf-true' ? 'True' : 'False';
+                        const correct = val === q.a;
+                        state.userAnswer = val; state.answered = true;
+                        state.results.push({ q, ua: val, correct, skipped: false });
+                        if (state.infiniteMode && !correct) requeueWrong();
+                        render();
+                    });
+                });
+                
+                const skp = document.getElementById('tf-skip');
+                if (skp) skp.addEventListener('click', () => doSkip());
+            }
+
+            if (q.type === 'mc' && !done) {
+                document.querySelectorAll('.mc-btn').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const val = btn.dataset.choice;
+                        const correct = val === q.a;
+                        state.userAnswer = val; state.answered = true;
+                        state.results.push({ q, ua: val, correct, skipped: false });
+                        if (state.infiniteMode && !correct) requeueWrong();
+                        render();
+                    });
+                });
+                
+                const skp = document.getElementById('mc-skip');
+                if (skp) skp.addEventListener('click', () => doSkip());
+            }
+
+            if (q.type === 'enum' && !done) {
+                const sub = document.getElementById('enum-sub');
+                const skp = document.getElementById('enum-skip');
+                
+                q.a.forEach((_, i) => {
+                    const inp = document.getElementById(`enum-inp-${i}`);
+                    if (inp) {
+                        inp.addEventListener('keydown', e => {
+                            if (e.key === 'Enter') submit();
+                        });
+                    }
+                });
+                
+                if (sub) sub.addEventListener('click', submit);
+                if (skp) skp.addEventListener('click', () => doSkip());
+                
+                function submit() {
+                    const vals = q.a.map((_, i) => {
+                        const inp = document.getElementById(`enum-inp-${i}`);
+                        return inp ? inp.value.trim() : '';
+                    });
+                    
+                    if (vals.every(v => v === '')) return;
+                    
+                    const correct = checkAnswer(q, vals);
+                    state.userAnswer = vals; state.answered = true; state.justSubmitted = true;
+                    state.results.push({ q, ua: vals, correct, skipped: false });
+                    if (state.infiniteMode && !correct) requeueWrong();
+                    render();
+                }
+                
+                const firstInp = document.getElementById('enum-inp-0');
+                if (firstInp) firstInp.focus();
+            }
+
+            if (q.type === 'match' && !done) {
+                const ms = state.matchingState;
+                const sub = document.getElementById('match-sub');
+                const skp = document.getElementById('match-skip');
+                
+                document.querySelectorAll('.match-left-item').forEach(el => {
+                    el.addEventListener('click', e => {
+                        if (e.target.classList.contains('match-clear-btn')) return;
+                        ms.activeLeft = el.dataset.key;
+                        render();
+                    });
+                });
+                
+                document.querySelectorAll('.match-clear-btn').forEach(btn => {
+                    btn.addEventListener('click', e => {
+                        e.stopPropagation();
+                        const key = btn.dataset.key;
+                        delete ms.pairs[key];
+                        ms.activeLeft = key;
+                        render();
+                    });
+                });
+                
+                document.querySelectorAll('.match-right-item').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        if (!ms.activeLeft) return;
+                        const val = btn.dataset.val;
+                        ms.pairs[ms.activeLeft] = val;
+                        
+                        const nextUnmatched = ms.left.find(lk => !ms.pairs[lk]);
+                        ms.activeLeft = nextUnmatched || null;
+                        
+                        render();
+                    });
+                });
+                
+                if (sub) sub.addEventListener('click', submit);
+                if (skp) skp.addEventListener('click', () => doSkip());
+                
+                function submit() {
+                    if (Object.keys(ms.pairs).length !== ms.left.length) return;
+                    
+                    const correct = checkAnswer(q, ms.pairs);
+                    state.userAnswer = ms.pairs; state.answered = true; state.justSubmitted = true;
+                    state.results.push({ q, ua: ms.pairs, correct, skipped: false });
+                    if (state.infiniteMode && !correct) requeueWrong();
+                    render();
+                }
+            }
+
+            if (q.type === 'id') {
+                const inp = document.getElementById('id-inp');
+                const sub = document.getElementById('id-sub');
+                const skp = document.getElementById('id-skip');
+                if (inp) inp.addEventListener('keydown', e => { if (e.key === 'Enter') submit(); });
+                if (sub) sub.addEventListener('click', submit);
+                if (skp) skp.addEventListener('click', () => doSkip());
+                function submit() {
+                    const val = (inp ? inp.value : '') || '';
+                    if (!val.trim()) return;
+                    const correct = checkAnswer(q, val);
+                    state.userAnswer = val; state.answered = true; state.justSubmitted = true;
+                    state.results.push({ q, ua: val, correct, skipped: false });
+                    if (state.infiniteMode && !correct) requeueWrong();
+                    render();
+                }
+                if (!done && inp) inp.focus();
+            }
+
+            const nb = document.getElementById('next-btn');
+            if (nb) nb.addEventListener('click', () => {
+                doNext();
+            });
+        }
+
+        // ── Results ──
+
+        function renderAnswerSummary(q, ans) {
+            if (!ans) return '<em>[No answer]</em>';
+            if (q.type === 'enum') {
+                return Array.isArray(ans) ? ans.map(a => `"${a}"`).join(', ') : ans;
+            }
+            if (q.type === 'match') {
+                return Object.entries(ans).map(([k, v]) => `${k} ➔ ${v}`).join('; ');
+            }
+            return ans;
+        }
+
+        function renderResults() {
+            const total = state.results.length;
+            const correct = state.results.filter(r => r.correct).length;
+            const skipped = state.results.filter(r => r.skipped).length;
+            const wrong = total - correct - skipped;
+            const pct = total > 0 ? Math.round((correct / total) * 100) : 0;
+            let byType = {};
+            state.results.forEach(r => {
+                const t = r.q.type; if (!byType[t]) byType[t] = { c: 0, t: 0 };
+                byType[t].t++; if (r.correct) byType[t].c++;
+            });
+            const typeRows = Object.entries(byType).map(([t, s]) => `
+    <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:0.5px solid var(--color-border-tertiary);font-size:13px">
+      <span style="color:var(--color-text-primary)">${typeBadge(t)}</span>
+      <span style="color:var(--color-text-secondary)">${s.c}/${s.t} (${Math.round(s.c / s.t * 100)}%)</span>
+    </div>`).join('');
+            let reviewItems = '';
+            if (state.showReview) {
+                reviewItems = `<div class="review-title">Question review</div><div class="review-list">` +
+                    state.results.map((r, i) => `
+      <div class="rev-item ${r.skipped ? 's' : r.correct ? 'c' : 'w'}">
+        <div class="rev-mod">${typeBadge(r.q.type)}</div>
+        <div class="rev-q">Q${i + 1}: ${r.q.t}</div>
+        <div class="rev-ans">${r.skipped 
+            ? `Skipped · Answer: <strong>${renderAnswerSummary(r.q, r.q.a)}</strong>` 
+            : `Your answer: <strong>${renderAnswerSummary(r.q, r.ua)}</strong>${!r.correct ? ` · Correct: <strong>${renderAnswerSummary(r.q, r.q.a)}</strong>` : ''}`}</div>
+      </div>`).join('') + `</div>`;
+            }
+            return `<div style="color:var(--color-text-secondary);font-size:12px;margin-bottom:4px">Final score</div>
+  <div class="res-big">${pct}%</div>
+  <div class="res-sub">${correct} correct out of ${total} questions</div>
+  <div class="stat-grid">
+    <div class="stat-card"><div class="stat-label">Correct</div><div class="stat-val" style="color:var(--color-text-success)">${correct}</div></div>
+    <div class="stat-card"><div class="stat-label">Wrong</div><div class="stat-val" style="color:var(--color-text-danger)">${wrong}</div></div>
+    <div class="stat-card"><div class="stat-label">Score</div><div class="stat-val">${pct}%</div></div>
+  </div>
+  <div style="margin-bottom:1rem">${typeRows}</div>
+  <div class="res-btns">
+    <button class="res-btn primary" id="retry-btn">Retry same questions</button>
+    <button class="res-btn secondary" id="setup-btn">Back to setup</button>
+    <button class="res-btn secondary" id="index-btn">← All quizzes</button>
+    <button class="res-btn secondary" id="review-btn">${state.showReview ? 'Hide review' : 'Review all answers'}</button>
+  </div>
+  ${reviewItems}`;
+        }
+
+        function bindResults() {
+            document.getElementById('retry-btn').addEventListener('click', () => {
+                const pool = state.originalPool.map(q => ({ ...q }));
+                state.quiz = state.shuffle ? shuffleArr(pool) : pool;
+                state.originalTotal = pool.length;
+                state.idx = 0; state.answered = false; state.skipped = false;
+                state.userAnswer = ''; state.results = []; state.showReview = false; state.justSubmitted = false;
+                state.screen = 'quiz'; render();
+            });
+            document.getElementById('setup-btn').addEventListener('click', () => { state.screen = 'setup'; render(); });
+            document.getElementById('index-btn').addEventListener('click', () => { window.location.href = 'index.html'; });
+            document.getElementById('review-btn').addEventListener('click', () => { state.showReview = !state.showReview; render(); });
+        }
+
+        // =============================================================================
+        // KEYBOARD SHORTCUTS
+        // =============================================================================
+
+        document.addEventListener('keydown', e => {
+            if (e.key !== 'Enter') return;
+            if (document.activeElement && document.activeElement.id === 'id-inp') return;
+            if (state.screen === 'setup') {
+                const sb = document.getElementById('start-btn');
+                if (sb && !sb.disabled) sb.click();
+            } else if (state.screen === 'quiz') {
+                const q = state.quiz[state.idx];
+                if (state.answered || state.skipped) {
+                    if (state.justSubmitted) { state.justSubmitted = false; return; }
+                    const nb = document.getElementById('next-btn');
+                    if (nb) nb.click();
+                } else if (q && q.type === 'match') {
+                    const ms = state.matchingState;
+                    if (ms && Object.keys(ms.pairs).length === ms.left.length) {
+                        const sb = document.getElementById('match-sub');
+                        if (sb && !sb.disabled) sb.click();
+                    }
+                }
+            } else if (state.screen === 'results') {
+                const rb = document.getElementById('retry-btn');
+                if (rb) rb.click();
+            }
+        });
+
+        init();
+    </script>
+</body>
+
+</html>
