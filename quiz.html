@@ -159,7 +159,7 @@
             }
 
             try {
-                const res = await fetch(`quizzes/${QUIZ_ID}/quiz.json`);
+                const res = await fetch(`quizzes/${QUIZ_ID}/quiz.json`, { cache: 'no-store' });
                 if (!res.ok) throw new Error(`HTTP ${res.status}`);
                 const data = await res.json();
 
