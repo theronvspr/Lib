@@ -64,7 +64,7 @@
 
 /* ── Base ── */
 body {
-    font-family: 'Roboto Mono', monospace;
+    font-family: 'Roboto Mono', ui-monospace, monospace;
     background: #f9f9f7;
     color: var(--color-text-primary);
     min-height: 100vh;
@@ -161,7 +161,31 @@ body {
     text-align: center;
     padding: 3rem;
     color: var(--color-text-tertiary);
-    font-size: 13px
+    font-size: 13px;
+    animation: pulse 1.5s infinite ease-in-out;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 0.6; }
+    50% { opacity: 1; }
+}
+
+.retry-load-btn {
+    margin-top: 12px;
+    padding: 8px 16px;
+    border-radius: var(--border-radius-md);
+    background: var(--color-text-primary);
+    color: var(--color-background-primary);
+    border: none;
+    font-family: inherit;
+    font-size: 13px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: opacity 0.15s;
+}
+
+.retry-load-btn:hover {
+    opacity: 0.85;
 }
 
 .idx-error {
@@ -1211,4 +1235,27 @@ body {
     .match-correct-reveal {
         border-top-color: rgba(255, 255, 255, 0.08);
     }
+}
+
+/* ── Additional Phase 5 & 6 Helper Styles ── */
+.q-no-answer-warning {
+    background: var(--color-background-warning);
+    color: var(--color-text-warning);
+    border: 0.5px solid var(--color-border-warning);
+    margin-top: 1rem;
+    padding: 9px 12px;
+    border-radius: var(--border-radius-md);
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+.q-remaining-badge {
+    font-size: 11px;
+    font-weight: bold;
+    color: var(--color-text-warning);
+    background: rgba(186, 117, 23, 0.08);
+    padding: 2px 6px;
+    border-radius: 4px;
+    border: 0.5px solid rgba(186, 117, 23, 0.2);
+    margin-left: 4px;
 }

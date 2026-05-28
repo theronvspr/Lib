@@ -28,6 +28,28 @@
             "match": { label: "Matching", desc: "Pair corresponding items" }
         };
 
+        // Escape helpers
+        function escapeHtml(s) {
+            if (typeof s !== 'string') return String(s ?? '');
+            return s.replace(/&/g, '&amp;').replace(/</g, '&lt;')
+                    .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+        }
+        const escapeAttr = escapeHtml;
+
+        // Normalization (shared across answer checking and display)
+        const norm = s => s.trim().toLowerCase().replace(/[^a-z0-9\-\/\s]/g, '').replace(/\s+/g, ' ');
+        const normVal = val => norm(val || '');
+
+        // Answer validation
+        function hasValidAnswer(q) {
+            if (q.a == null) return false;
+            if (q.type === 'enum') return Array.isArray(q.a) && q.a.length > 0 && q.a.some(v => v);
+            if (q.type === 'match') return typeof q.a === 'object' && Object.keys(q.a).length > 0;
+            if (q.type === 'tf') return q.a === 'True' || q.a === 'False';
+            if (q.type === 'mc') return typeof q.a === 'string' && q.a.length > 0;
+            return typeof q.a === 'string' && q.a.trim().length > 0;
+        }
+
         let QS = [];
         let QUIZ_TITLE = "Quiz";
         let QUIZ_SUBTITLE = "Select question types to include, then start.";
@@ -74,8 +96,6 @@
         }
 
         function checkAnswer(q, ua) {
-            const norm = s => s.trim().toLowerCase().replace(/[^a-z0-9\-\/\s]/g, '').replace(/\s+/g, ' ');
-            
             if (q.type === 'enum') {
                 if (!Array.isArray(ua) || ua.length !== q.a.length) return false;
                 const results = gradeEnumInputs(q, ua);
@@ -97,8 +117,6 @@
         }
 
         function gradeEnumInputs(q, ua) {
-            const norm = s => s.trim().toLowerCase().replace(/[^a-z0-9\-\/\s]/g, '').replace(/\s+/g, ' ');
-            const normVal = val => norm(val || '');
             const results = Array(ua.length).fill(false);
             
             if (q.ordered) {
@@ -144,6 +162,11 @@
         // =============================================================================
 
         async function init() {
+            const loadingTimeout = setTimeout(() => {
+                const el = document.querySelector('.idx-loading');
+                if (el) el.innerHTML = 'Taking too long…<br><button class="retry-load-btn" onclick="location.reload()">Retry</button>';
+            }, 10000);
+
             const params = new URLSearchParams(window.location.search);
             QUIZ_ID = params.get('quiz');
 
@@ -154,12 +177,14 @@
             }
 
             if (!QUIZ_ID) {
+                clearTimeout(loadingTimeout);
                 showError('No quiz specified. <a href="index.html" style="color:inherit;text-decoration:underline">Go back to the index</a>.');
                 return;
             }
 
             try {
                 const res = await fetch(`quizzes/${QUIZ_ID}/quiz.json`, { cache: 'no-store' });
+                clearTimeout(loadingTimeout);
                 if (!res.ok) throw new Error(`HTTP ${res.status}`);
                 const data = await res.json();
 
@@ -177,7 +202,8 @@
                 state.screen = 'setup';
                 render();
             } catch (err) {
-                showError(`Failed to load quiz "<strong>${QUIZ_ID}</strong>". Make sure the file <code>quizzes/${QUIZ_ID}/quiz.json</code> exists and is valid JSON.<br>
+                clearTimeout(loadingTimeout);
+                showError(`Failed to load quiz "<strong>${escapeHtml(QUIZ_ID)}</strong>". Make sure the file <code>quizzes/${escapeHtml(QUIZ_ID)}/quiz.json</code> exists and is valid JSON.<br>
                     <a href="index.html" style="color:inherit;text-decoration:underline;margin-top:8px;display:inline-block">← Back to index</a>`);
             }
         }
@@ -197,6 +223,7 @@
             if (state.shuffle) pool = shuffleArr(pool);
             state.originalPool = pool.map(q => ({ ...q }));
             state.originalTotal = pool.length;
+            state.shuffleAtStart = state.shuffle;
             state.quiz = pool; state.idx = 0; state.answered = false; state.skipped = false;
             state.userAnswer = ''; state.results = []; state.showReview = false; state.justSubmitted = false;
             state.screen = 'quiz'; render();
@@ -210,6 +237,7 @@
         }
 
         function doNext() {
+            state.justSubmitted = false;
             if (state.idx < state.quiz.length - 1) {
                 state.idx++; state.answered = false; state.skipped = false;
                 state.userAnswer = ''; render();
@@ -235,9 +263,13 @@
 
         function render() {
             const app = document.getElementById('app');
+            const scrollY = document.scrollingElement ? document.scrollingElement.scrollTop : 0;
+            const focusId = document.activeElement ? document.activeElement.id : null;
             if (state.screen === 'setup') { app.innerHTML = renderSetup(); bindSetup(); }
             else if (state.screen === 'quiz') { app.innerHTML = renderQuiz(); bindQuiz(); }
             else if (state.screen === 'results') { app.innerHTML = renderResults(); bindResults(); }
+            if (document.scrollingElement) document.scrollingElement.scrollTop = scrollY;
+            if (focusId) { const el = document.getElementById(focusId); if (el && el.focus) el.focus(); }
         }
 
         // ── Setup ──
@@ -255,8 +287,8 @@
     </div>`;
             }).join('');
             return `<a class="quiz-back" href="index.html">← All quizzes</a>
-  <div class="setup-title">${QUIZ_TITLE}</div>
-  <div class="setup-sub">${QUIZ_SUBTITLE}</div>
+  <div class="setup-title">${escapeHtml(QUIZ_TITLE)}</div>
+  <div class="setup-sub">${escapeHtml(QUIZ_SUBTITLE)}</div>
   <div class="section-label">Customize</div>
   <div class="mod-grid">${tiles}</div>
   <div class="sel-row">
@@ -299,6 +331,25 @@
                 ? (state.quiz.length > 1 ? Math.round((state.idx / state.quiz.length) * 100) : 0)
                 : Math.round((state.results.length / total) * 100);
             const score = state.results.filter(r => r.correct).length;
+
+            // No-answer path: show warning and skip
+            if (!hasValidAnswer(q)) {
+                const noAnswerPct = state.infiniteMode
+                    ? (state.quiz.length > 1 ? Math.round((state.idx / state.quiz.length) * 100) : 0)
+                    : Math.round((state.results.length / (state.infiniteMode ? state.quiz.length : state.originalTotal)) * 100);
+                return `<div class="prog-bar-track"><div class="prog-bar-fill" style="width:${noAnswerPct}%"></div></div>
+  <div class="q-header">
+    <span class="q-badge">${typeBadge(q.type)}</span>
+    <span class="q-score">Score: ${score}/${state.results.filter(r => !r.noAnswer).length}${state.infiniteMode ? ' · <span class="q-remaining-badge">' + (state.quiz.length - state.idx - 1) + ' remaining</span>' : ''}</span>
+  </div>
+  <div class="q-card">
+    <div class="q-num">Question ${state.results.length + 1}${state.infiniteMode ? '' : ' of ' + total}</div>
+    <div class="q-text">${escapeHtml(q.t)}</div>
+    <div class="q-no-answer-warning">⚠ This question has no verified answer and cannot be scored.</div>
+  </div>
+  <div class="next-row"><button class="next-btn" id="next-btn">Next →</button></div>`;
+            }
+
             let answerBlock = '';
 
             if (q.type === 'tf') {
@@ -312,12 +363,12 @@
                     if (correct === 'True') tC = 'reveal-right'; else fC = 'reveal-right';
                 }
                 answerBlock = `<div class="tf-row">
-      <button class="tf-btn ${tC}" id="tf-true" ${done ? 'disabled' : ''}>True</button>
-      <button class="tf-btn ${fC}" id="tf-false" ${done ? 'disabled' : ''}>False</button>
+      <button class="tf-btn ${tC}" id="tf-true" aria-label="True" ${done ? 'disabled' : ''}>True</button>
+      <button class="tf-btn ${fC}" id="tf-false" aria-label="False" ${done ? 'disabled' : ''}>False</button>
     </div>
     ${!done ? `
     <div style="margin-top: 12px; display: flex; justify-content: flex-start;">
-      <button class="id-skip" id="tf-skip" style="padding: 10px 16px;">Skip</button>
+      <button class="id-skip" id="tf-skip" aria-label="Skip question" style="padding: 10px 16px;">Skip</button>
     </div>` : ''}`;
             } else if (q.type === 'mc') {
                 const ua = state.userAnswer; const correct = q.a;
@@ -329,11 +380,11 @@
                     } else if (skipped) {
                         if (c === correct) cls = 'reveal-right';
                     }
-                    return `<button class="mc-btn ${cls}" data-choice="${c}" ${done ? 'disabled' : ''}>${c}</button>`;
+                    return `<button class="mc-btn ${cls}" data-choice="${escapeAttr(c)}" ${done ? 'disabled' : ''}>${escapeHtml(c)}</button>`;
                 }).join('') + `</div>
                 ${!done ? `
                 <div style="margin-top: 12px; display: flex; justify-content: flex-start;">
-                    <button class="id-skip" id="mc-skip" style="padding: 10px 16px;">Skip</button>
+                    <button class="id-skip" id="mc-skip" aria-label="Skip question" style="padding: 10px 16px;">Skip</button>
                 </div>` : ''}`;
             } else if (q.type === 'enum') {
                 const orderText = q.ordered ? "Strict Order Required" : "Any Order Accepted";
@@ -352,16 +403,14 @@
                     </div>
                     <div class="enum-btns">
                         <button class="enum-sub" id="enum-sub">Submit</button>
-                        <button class="enum-skip" id="enum-skip">Skip</button>
+                        <button class="enum-skip" id="enum-skip" aria-label="Skip question">Skip</button>
                     </div>`;
                 } else {
                     const ua = state.userAnswer || [];
                     const graded = answered ? gradeEnumInputs(q, ua) : Array(q.a.length).fill(false);
                     
-                    const norm = s => s.trim().toLowerCase().replace(/[^a-z0-9\-\/\s]/g, '').replace(/\s+/g, ' ');
-                    const normVal = val => norm(val || '');
                     const matchedSlots = new Set();
-                    if (!q.ordered && answered) {
+                    if (!q.ordered && (answered || skipped)) {
                         for (let i = 0; i < ua.length; i++) {
                             const uVal = normVal(ua[i]);
                             if (!uVal) continue;
@@ -401,14 +450,14 @@
                             
                             let correction = '';
                             if (q.ordered && !isCorrect) {
-                                correction = `<div class="enum-correction">Expected: <strong>${q.a[i]}</strong></div>`;
+                                correction = `<div class="enum-correction">Expected: <strong>${escapeHtml(q.a[i])}</strong></div>`;
                             }
                             
                             return `
                             <div class="enum-row-display ${cls}">
                                 <div class="enum-row-header">
                                     <span class="enum-num-badge">${i + 1}</span>
-                                    <span class="enum-user-val">${val ? val.replace(/"/g, '&quot;') : '<em>[No answer]</em>'}</span>
+                                    <span class="enum-user-val">${val ? escapeHtml(val) : '<em>[No answer]</em>'}</span>
                                     <span class="enum-status-badge">${badge}</span>
                                 </div>
                                 ${correction}
@@ -421,7 +470,7 @@
                         <div class="enum-missing-card">
                             <div class="enum-missing-title">Expected / missing answers:</div>
                             <div class="enum-missing-list">
-                                ${missingAnswers.map(ans => `<span class="enum-missing-item">${ans}</span>`).join('')}
+                                ${missingAnswers.map(ans => `<span class="enum-missing-item">${escapeHtml(ans)}</span>`).join('')}
                             </div>
                         </div>`;
                     }
@@ -450,11 +499,11 @@
                         if (matchedVal) cls += ' matched';
                         
                         return `
-                        <div class="${cls}" data-key="${lk.replace(/"/g, '&quot;')}">
-                            <div class="match-left-prompt">${lk}</div>
+                        <div class="${cls}" data-key="${escapeAttr(lk)}">
+                            <div class="match-left-prompt">${escapeHtml(lk)}</div>
                             <div class="match-left-slot">
                                 ${matchedVal 
-                                    ? `<span class="match-docked-val">${matchedVal} <button class="match-clear-btn" data-key="${lk.replace(/"/g, '&quot;')}">×</button></span>`
+                                    ? `<span class="match-docked-val">${escapeHtml(matchedVal)} <button class="match-clear-btn" data-key="${escapeAttr(lk)}" aria-label="Clear pairing">×</button></span>`
                                     : `<span class="match-slot-placeholder">Select option...</span>`}
                             </div>
                         </div>`;
@@ -465,7 +514,7 @@
                         let cls = 'match-right-item';
                         if (isUsed) cls += ' used';
                         
-                        return `<button class="${cls}" data-val="${rv.replace(/"/g, '&quot;')}" ${isUsed ? 'disabled' : ''}>${rv}</button>`;
+                        return `<button class="${cls}" data-val="${escapeAttr(rv)}" ${isUsed ? 'disabled' : ''}>${escapeHtml(rv)}</button>`;
                     }).join('');
                     
                     answerBlock = `
@@ -482,7 +531,7 @@
                     </div>
                     <div class="match-btns">
                         <button class="match-sub" id="match-sub" ${Object.keys(ms.pairs).length === ms.left.length ? '' : 'disabled'}>Submit</button>
-                        <button class="match-skip" id="match-skip">Skip</button>
+                        <button class="match-skip" id="match-skip" aria-label="Skip question">Skip</button>
                     </div>`;
                 } else {
                     const ua = state.userAnswer || {};
@@ -505,15 +554,15 @@
                         
                         let correction = '';
                         if (!isCorrect) {
-                            correction = `<div class="match-correct-reveal">Expected: <strong>${correctVal}</strong></div>`;
+                            correction = `<div class="match-correct-reveal">Expected: <strong>${escapeHtml(correctVal)}</strong></div>`;
                         }
                         
                         return `
                         <div class="match-result-row ${cls}">
                             <div class="match-res-header">
-                                <span class="match-res-prompt"><strong>${lk}</strong></span>
+                                <span class="match-res-prompt"><strong>${escapeHtml(lk)}</strong></span>
                                 <span class="match-res-arrow">➔</span>
-                                <span class="match-res-val">${userVal ? userVal : '<em>[Unmatched]</em>'}</span>
+                                <span class="match-res-val">${userVal ? escapeHtml(userVal) : '<em>[Unmatched]</em>'}</span>
                                 <span class="match-res-badge">${badge}</span>
                             </div>
                             ${correction}
@@ -527,10 +576,10 @@
                 }
             } else {
                 answerBlock = `<div class="id-row">
-      <input class="id-input" id="id-inp" type="text" placeholder="Type your answer..." ${done ? 'disabled' : ''} value="${state.userAnswer ? state.userAnswer.replace(/"/g, '&quot;') : ''}">
+      <input class="id-input" id="id-inp" type="text" placeholder="Type your answer..." ${done ? 'disabled' : ''} value="${escapeAttr(state.userAnswer || '')}">
       <div class="id-btns">
         <button class="id-sub" id="id-sub" ${done ? 'disabled' : ''}>Submit</button>
-        ${!done ? `<button class="id-skip" id="id-skip">Skip</button>` : ''}
+        ${!done ? `<button class="id-skip" id="id-skip" aria-label="Skip question">Skip</button>` : ''}
       </div>
     </div>`;
             }
@@ -542,7 +591,7 @@
                 } else if (q.type === 'match') {
                     feedback = `<div class="feedback skipped">Skipped. See correct pairings above.</div>`;
                 } else {
-                    feedback = `<div class="feedback skipped">Skipped. Correct answer: <strong>${q.a}</strong></div>`;
+                    feedback = `<div class="feedback skipped">Skipped. Correct answer: <strong>${escapeHtml(q.a)}</strong></div>`;
                 }
             } else if (answered) {
                 const correct = checkAnswer(q, state.userAnswer);
@@ -557,7 +606,7 @@
                 } else {
                     feedback = correct
                         ? `<div class="feedback ok">Correct!</div>`
-                        : `<div class="feedback no">Incorrect. Correct answer: <strong>${q.a}</strong>${state.infiniteMode ? ' · This question will come back!' : ''}</div>`;
+                        : `<div class="feedback no">Incorrect. Correct answer: <strong>${escapeHtml(q.a)}</strong>${state.infiniteMode ? ' · This question will come back!' : ''}</div>`;
                 }
             }
 
@@ -567,11 +616,11 @@
             return `<div class="prog-bar-track"><div class="prog-bar-fill" style="width:${pct}%"></div></div>
   <div class="q-header">
     <span class="q-badge">${typeBadge(q.type)}</span>
-    <span class="q-score">Score: ${score}/${state.results.length}</span>
+    <span class="q-score">Score: ${score}/${state.results.filter(r => !r.noAnswer).length}${state.infiniteMode ? ' · <span class="q-remaining-badge">' + (state.quiz.length - state.idx - 1) + ' remaining</span>' : ''}</span>
   </div>
   <div class="q-card">
-    <div class="q-num">Question ${state.results.length + 1} of ${total}</div>
-    <div class="q-text">${q.t}</div>
+    <div class="q-num">Question ${state.results.length + 1}${state.infiniteMode ? '' : ' of ' + total}</div>
+    <div class="q-text">${escapeHtml(q.t)}</div>
     ${answerBlock}
     ${feedback}
   </div>
@@ -581,6 +630,16 @@
         function bindQuiz() {
             const q = state.quiz[state.idx];
             const done = state.answered || state.skipped;
+
+            // No-answer questions: only wire the Next button
+            if (!hasValidAnswer(q)) {
+                const nb = document.getElementById('next-btn');
+                if (nb) nb.addEventListener('click', () => {
+                    state.results.push({ q, ua: '', correct: false, skipped: false, noAnswer: true });
+                    doNext();
+                });
+                return;
+            }
 
             if (q.type === 'tf' && !done) {
                 ['tf-true', 'tf-false'].forEach(id => {
@@ -730,22 +789,23 @@
         function renderAnswerSummary(q, ans) {
             if (!ans) return '<em>[No answer]</em>';
             if (q.type === 'enum') {
-                return Array.isArray(ans) ? ans.map(a => `"${a}"`).join(', ') : ans;
+                return Array.isArray(ans) ? ans.map(a => `"${escapeHtml(a)}"`).join(', ') : escapeHtml(ans);
             }
             if (q.type === 'match') {
-                return Object.entries(ans).map(([k, v]) => `${k} ➔ ${v}`).join('; ');
+                return Object.entries(ans).map(([k, v]) => `${escapeHtml(k)} ➔ ${escapeHtml(v)}`).join('; ');
             }
-            return ans;
+            return escapeHtml(ans);
         }
 
         function renderResults() {
-            const total = state.results.length;
-            const correct = state.results.filter(r => r.correct).length;
-            const skipped = state.results.filter(r => r.skipped).length;
+            const scored = state.results.filter(r => !r.noAnswer);
+            const total = scored.length;
+            const correct = scored.filter(r => r.correct).length;
+            const skipped = scored.filter(r => r.skipped).length;
             const wrong = total - correct - skipped;
             const pct = total > 0 ? Math.round((correct / total) * 100) : 0;
             let byType = {};
-            state.results.forEach(r => {
+            scored.forEach(r => {
                 const t = r.q.type; if (!byType[t]) byType[t] = { c: 0, t: 0 };
                 byType[t].t++; if (r.correct) byType[t].c++;
             });
@@ -758,12 +818,14 @@
             if (state.showReview) {
                 reviewItems = `<div class="review-title">Question review</div><div class="review-list">` +
                     state.results.map((r, i) => `
-      <div class="rev-item ${r.skipped ? 's' : r.correct ? 'c' : 'w'}">
+      <div class="rev-item ${r.noAnswer ? 's' : r.skipped ? 's' : r.correct ? 'c' : 'w'}">
         <div class="rev-mod">${typeBadge(r.q.type)}</div>
-        <div class="rev-q">Q${i + 1}: ${r.q.t}</div>
-        <div class="rev-ans">${r.skipped 
-            ? `Skipped · Answer: <strong>${renderAnswerSummary(r.q, r.q.a)}</strong>` 
-            : `Your answer: <strong>${renderAnswerSummary(r.q, r.ua)}</strong>${!r.correct ? ` · Correct: <strong>${renderAnswerSummary(r.q, r.q.a)}</strong>` : ''}`}</div>
+        <div class="rev-q">Q${i + 1}: ${escapeHtml(r.q.t)}</div>
+        <div class="rev-ans">${r.noAnswer
+            ? '⚠ No verified answer — question not scored'
+            : r.skipped 
+                ? `Skipped · Answer: <strong>${renderAnswerSummary(r.q, r.q.a)}</strong>` 
+                : `Your answer: <strong>${renderAnswerSummary(r.q, r.ua)}</strong>${!r.correct ? ` · Correct: <strong>${renderAnswerSummary(r.q, r.q.a)}</strong>` : ''}`}</div>
       </div>`).join('') + `</div>`;
             }
             return `<div style="color:var(--color-text-secondary);font-size:12px;margin-bottom:4px">Final score</div>
@@ -787,7 +849,7 @@
         function bindResults() {
             document.getElementById('retry-btn').addEventListener('click', () => {
                 const pool = state.originalPool.map(q => ({ ...q }));
-                state.quiz = state.shuffle ? shuffleArr(pool) : pool;
+                state.quiz = state.shuffleAtStart ? shuffleArr(pool) : pool;
                 state.originalTotal = pool.length;
                 state.idx = 0; state.answered = false; state.skipped = false;
                 state.userAnswer = ''; state.results = []; state.showReview = false; state.justSubmitted = false;
@@ -805,6 +867,7 @@
         document.addEventListener('keydown', e => {
             if (e.key !== 'Enter') return;
             if (document.activeElement && document.activeElement.id === 'id-inp') return;
+            if (document.activeElement && document.activeElement.classList.contains('enum-input')) return;
             if (state.screen === 'setup') {
                 const sb = document.getElementById('start-btn');
                 if (sb && !sb.disabled) sb.click();
@@ -828,6 +891,11 @@
         });
 
         init();
+
+        // Service Worker registration
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('./sw.js').catch(() => {});
+        }
     </script>
 </body>
 
