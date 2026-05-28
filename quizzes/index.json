@@ -7,6 +7,15 @@
             "tags": [
                 "Exam"
             ]
+        },
+        {
+            "id": "sipp",
+            "title": "Social, Intellectual Property, and Privacy (SIPP)",
+            "description": "50 questions covering censorship, privacy, civil liberties, intellectual property rights, and online security.",
+            "tags": [
+                "Ethics",
+                "Exam"
+            ]
         }
     ]
 }
