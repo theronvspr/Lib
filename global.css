@@ -13,6 +13,7 @@
 
 /* ── Design tokens ── */
 :root {
+    --color-bg-body: #f9f9f7;
     --color-background-primary: #ffffff;
     --color-background-secondary: #f1efe8;
     --color-background-success: #eaf3de;
@@ -38,7 +39,8 @@
 }
 
 @media (prefers-color-scheme: dark) {
-    :root {
+    :root:not([data-theme="light"]) {
+        --color-bg-body: #111110;
         --color-background-primary: #1e1e1c;
         --color-background-secondary: #2c2c2a;
         --color-background-success: #173404;
@@ -62,21 +64,39 @@
     }
 }
 
+:root[data-theme="dark"] {
+    --color-bg-body: #111110;
+    --color-background-primary: #1e1e1c;
+    --color-background-secondary: #2c2c2a;
+    --color-background-success: #173404;
+    --color-background-danger: #501313;
+    --color-background-info: #042c53;
+    --color-background-warning: #412402;
+    --color-text-primary: #f1efe8;
+    --color-text-secondary: #b4b2a9;
+    --color-text-tertiary: #888780;
+    --color-text-success: #c0dd97;
+    --color-text-danger: #f09595;
+    --color-text-info: #b5d4f4;
+    --color-text-warning: #fac775;
+    --color-border-tertiary: rgba(255, 255, 255, 0.15);
+    --color-border-secondary: rgba(255, 255, 255, 0.3);
+    --color-border-primary: rgba(255, 255, 255, 0.4);
+    --color-border-success: #639922;
+    --color-border-danger: #e24b4a;
+    --color-border-info: #378add;
+    --color-border-warning: #ba7517;
+}
+
 /* ── Base ── */
 body {
     font-family: 'Roboto Mono', ui-monospace, monospace;
-    background: #f9f9f7;
+    background: var(--color-bg-body);
     color: var(--color-text-primary);
     min-height: 100vh;
     display: flex;
     justify-content: center;
     padding: 2rem 1rem
-}
-
-@media (prefers-color-scheme: dark) {
-    body {
-        background: #111110;
-    }
 }
 
 .root {
@@ -1259,4 +1279,60 @@ body {
     border-radius: 4px;
     border: 0.5px solid rgba(186, 117, 23, 0.2);
     margin-left: 4px;
+}
+
+/* ── Manual Dark Theme Overrides for Components ── */
+:root[data-theme="dark"] .enum-correction {
+    border-top-color: rgba(255, 255, 255, 0.08);
+}
+:root[data-theme="dark"] .match-left-slot {
+    background: rgba(255, 255, 255, 0.01);
+}
+:root[data-theme="dark"] .match-correct-reveal {
+    border-top-color: rgba(255, 255, 255, 0.08);
+}
+
+/* ── Theme Switcher Button ── */
+.theme-toggle {
+    position: fixed;
+    top: 1.5rem;
+    right: 1.5rem;
+    background: var(--color-background-primary);
+    border: 0.5px solid var(--color-border-secondary);
+    color: var(--color-text-primary);
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    transition: background 0.15s, transform 0.15s, border-color 0.15s;
+    z-index: 1000;
+    padding: 0;
+}
+
+.theme-toggle:hover {
+    background: var(--color-background-secondary);
+    transform: scale(1.05);
+}
+
+.theme-toggle svg {
+    width: 20px;
+    height: 20px;
+    fill: currentColor;
+}
+
+@media (max-width: 768px) {
+    .theme-toggle {
+        top: 1rem;
+        right: 1rem;
+        width: 36px;
+        height: 36px;
+    }
+    .theme-toggle svg {
+        width: 18px;
+        height: 18px;
+    }
 }
