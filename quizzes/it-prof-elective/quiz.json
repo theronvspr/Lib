@@ -1,0 +1,483 @@
+{
+    "title": "IT Professional Elective Lec",
+    "subtitle": "Module 1 & 2 Reviewer covering HTML Forms, JavaScript basics, Functions, and Control Structures.",
+    "questions": [
+        {
+            "t": "The HTTP _____ is used to send data to the server for further processing.",
+            "type": "id",
+            "a": "POST method",
+            "alt": [
+                "POST"
+            ]
+        },
+        {
+            "t": "The _____ is used to request data from a specified resource or a resource from the server.",
+            "type": "id",
+            "a": "GET method",
+            "alt": [
+                "GET"
+            ]
+        },
+        {
+            "t": "The _____ tag is used to specify pre-defined list options for input controls.",
+            "type": "id",
+            "a": "`<datalist>`",
+            "alt": [
+                "<datalist>"
+            ]
+        },
+        {
+            "t": "The _____ tag displays the output of the calculations performed.",
+            "type": "id",
+            "a": "`<output>`",
+            "alt": [
+                "<output>"
+            ]
+        },
+        {
+            "t": "The _____ attribute in the `<form>` element specifies how the data is sent to the server.",
+            "type": "id",
+            "a": "`method`",
+            "alt": [
+                "method"
+            ]
+        },
+        {
+            "t": "The _____ tag is used to draw a box around other form elements and group the related data.",
+            "type": "id",
+            "a": "`<fieldset>`",
+            "alt": [
+                "<fieldset>"
+            ]
+        },
+        {
+            "t": "The _____ tag defines a clickable button to control other elements or execute a functionality.",
+            "type": "id",
+            "a": "`<button>`",
+            "alt": [
+                "<button>"
+            ]
+        },
+        {
+            "t": "_____ is a section of the document that collects input from the user.",
+            "type": "id",
+            "a": "HTML Form"
+        },
+        {
+            "t": "_____ is a software application used to write, edit, and save HTML code for creating web pages.",
+            "type": "id",
+            "a": "HTML Text Editor"
+        },
+        {
+            "t": "When sending data to a server using `method=\"post\"`, the submitted user data is added directly into the body of the request, making it less visible to the user compared to the GET method.",
+            "type": "tf",
+            "a": "True"
+        },
+        {
+            "t": "If you use the standard `<input type=\"text\">` element for a password field, the characters typed by the user will be clearly visible on the screen instead of being masked.",
+            "type": "tf",
+            "a": "True"
+        },
+        {
+            "t": "By wrapping form elements inside a `<fieldset>` tag, the browser will automatically draw a visual box boundary around them.",
+            "type": "tf",
+            "a": "True"
+        },
+        {
+            "t": "A developer is creating a survey form and wants to use the `<datalist>` element. The `<datalist>` tag is strictly used to display a read-only mathematical calculation result to the user.",
+            "type": "tf",
+            "a": "False"
+        },
+        {
+            "t": "A developer wants to create a gender selection field (\"Male\" or \"Female\"). If they use `<input type=\"radio\">` tags but forget to give both elements the exact same `name` attribute, the user will be trapped into selecting both options simultaneously without being able to uncheck them.",
+            "type": "tf",
+            "a": "False"
+        },
+        {
+            "t": "You need to gather long paragraphs of user feedback. You should use an `<input type=\"text\">` element because it natively provides a multi-line box that adjusts to long text contents.",
+            "type": "tf",
+            "a": "False"
+        },
+        {
+            "t": "If you set your form's configuration to `method=\"get\"`, the data entered by the user will be appended directly to the URL string in the browser's address bar when submitted.",
+            "type": "tf",
+            "a": "True"
+        },
+        {
+            "t": "You want to create a web button that triggers a custom script without immediately submitting the form data to a server. You can explicitly configure the tag as `<button type=\"button\">` to prevent the default submission behavior.",
+            "type": "tf",
+            "a": "True"
+        },
+        {
+            "t": "A teacher wants students to submit feedback that may include several sentences of free-form text. Which input element is most appropriate?",
+            "type": "mc",
+            "choices": [
+                "`<textarea>`",
+                "`<input type=\"text\">`",
+                "`<select>`",
+                "`<datalist>`"
+            ],
+            "a": "`<textarea>`"
+        },
+        {
+            "t": "A web form is designed for a search engine's search bar, where the resulting query should be shareable as a bookmarkable link. Which HTTP method should the form use?",
+            "type": "mc",
+            "choices": [
+                "GET method",
+                "POST method",
+                "PUT method",
+                "DELETE method"
+            ],
+            "a": "GET method"
+        },
+        {
+            "t": "A developer wants users to pick a country from a long list of 195 countries. Comparing `<select>` with `<option>` elements versus `<datalist>` with `<input>`, which is generally the better user experience?",
+            "type": "mc",
+            "choices": [
+                "`<select>`",
+                "`<datalist>`",
+                "Both are identical in function and UX",
+                "`<textarea>`"
+            ],
+            "a": "`<datalist>`"
+        },
+        {
+            "t": "A developer mistakenly omits the `name` attribute from all `<input>` fields in a form. When the form is submitted, the server receives no usable data. Why?",
+            "type": "mc",
+            "choices": [
+                "The `name` attribute defines the key for sending data to the server",
+                "The `name` attribute only affects CSS styling, so the form should still work",
+                "Omitting `name` automatically converts the field to a `<button>`",
+                "The `id` attribute always replaces the need for `name` in form submissions"
+            ],
+            "a": "The `name` attribute defines the key for sending data to the server"
+        },
+        {
+            "t": "A login form sends a user's password using the GET method, and the developer notices the password appears directly in the browser's address bar. What is the most appropriate fix?",
+            "type": "mc",
+            "choices": [
+                "Switch to POST, as GET exposes sensitive data in the URL",
+                "Keep GET, but rename the input field to \"secure_password\"",
+                "Add a `<label>` tag to hide the password visually",
+                "Use `<textarea>` instead of `<input type=\"password\">`"
+            ],
+            "a": "Switch to POST, as GET exposes sensitive data in the URL"
+        },
+        {
+            "t": "A registration form needs to let users select multiple hobbies where more than one option can be chosen at once. Which form element should be used?",
+            "type": "mc",
+            "choices": [
+                "Checkboxes",
+                "Radio buttons",
+                "`<select>` with `<optgroup>`",
+                "`<datalist>`"
+            ],
+            "a": "Checkboxes"
+        },
+        {
+            "t": "A developer is building a job application form that includes a field for applicants to select their date of birth from a calendar widget. Which `<input>` type best fulfills this requirement?",
+            "type": "mc",
+            "choices": [
+                "`type=\"text\"`",
+                "`type=\"date\"`",
+                "`type=\"number\"`",
+                "`type=\"search\"`"
+            ],
+            "a": "`type=\"date\"`"
+        },
+        {
+            "t": "A screen reader user reports that they cannot tell what a field is for given `<input type=\"text\" name=\"username\">`. What is missing?",
+            "type": "mc",
+            "choices": [
+                "A `<button>` element, to let them submit faster",
+                "A `<label for=\"username\">` element associated with the input's `id`",
+                "A `<textarea>` instead of `<input>`",
+                "A `placeholder` attribute is sufficient and is identical to a `<label>` in function"
+            ],
+            "a": "A `<label for=\"username\">` element associated with the input's `id`"
+        },
+        {
+            "t": "How should `<fieldset>` and `<legend>` be used together to improve form structure?",
+            "type": "mc",
+            "choices": [
+                "Each `<fieldset>` should visually/semantically group a related set of inputs, with a `<legend>` inside it acting as that group's caption",
+                "`<legend>` should wrap the entire form, while `<fieldset>` labels each input individually",
+                "`<fieldset>` and `<legend>` are interchangeable and serve the same purpose",
+                "Only one `<fieldset>` may exist per HTML document"
+            ],
+            "a": "Each `<fieldset>` should visually/semantically group a related set of inputs, with a `<legend>` inside it acting as that group's caption"
+        },
+        {
+            "t": "Match each scenario to the correct HTML element.",
+            "type": "match",
+            "a": {
+                "A medical questionnaire asks \"Are you experiencing chest pain?\" with exactly one absolute answer (\"Yes\" or \"No\")": "`<input type=\"radio\">`",
+                "A search field suggests travel destinations as the user types, but still allows custom input": "`<datalist>`",
+                "Clicking the text \"First Name\" automatically shifts browser cursor focus into the text box": "`<label>`",
+                "A food delivery app lets customers select multiple toppings where choosing one does not uncheck others": "`<input type=\"checkbox\">`",
+                "A dashboard button triggers a custom JavaScript print function without submitting form data": "`<button type=\"button\">`"
+            }
+        },
+        {
+            "t": "Match each scenario to the correct form method or element.",
+            "type": "match",
+            "a": {
+                "An e-commerce checkout page must ensure credentials are never exposed in the browser's address bar": "`method=\"POST\"`",
+                "A country dropdown groups similar countries under non-selectable region headers like \"Asia\" or \"Europe\"": "`<select>` paired with `<optgroup>`",
+                "A user profile page draws a boundary box around \"Emergency Contact Info\" with a visible text anchor on the border": "`<fieldset>` and `<legend>`",
+                "A real estate search filter lets users copy the URL and share it with family to see the exact same filtered results": "`method=\"GET\"`",
+                "A blog comment section needs an element that natively supports multi-line text input": "`<textarea>`"
+            }
+        },
+        {
+            "t": "JavaScript is an _____ language, which means scripts execute without preliminary compilation.",
+            "type": "id",
+            "a": "interpreted"
+        },
+        {
+            "t": "JavaScript is usually embedded directly into HTML pages using the _____ tag.",
+            "type": "id",
+            "a": "`<script>`",
+            "alt": [
+                "<script>"
+            ]
+        },
+        {
+            "t": "With the introduction of _____, JavaScript can now also be used for back-end web development.",
+            "type": "id",
+            "a": "NodeJS"
+        },
+        {
+            "t": "A developer claims: \"JavaScript requires you to purchase a license before you can use it in your projects.\"",
+            "type": "tf",
+            "a": "False"
+        },
+        {
+            "t": "JavaScript is classified as a compiled language because the browser must fully compile the script before any part of it can run.",
+            "type": "tf",
+            "a": "False"
+        },
+        {
+            "t": "A student argues that JavaScript can only be used for front-end web development and has no role in building back-end systems.",
+            "type": "tf",
+            "a": "False"
+        },
+        {
+            "t": "A web developer wants to check whether a user filled out all required fields in a registration form before the data ever reaches the server. Which JavaScript capability directly supports this?",
+            "type": "mc",
+            "choices": [
+                "Detecting the visitor's browser",
+                "Creating cookies",
+                "Validating data before server submission",
+                "Writing dynamic text into an HTML page"
+            ],
+            "a": "Validating data before server submission"
+        },
+        {
+            "t": "A game studio wants to build a casual game that runs directly inside a web browser without any plugin or download. Which of the following best describes why JavaScript is appropriate?",
+            "type": "mc",
+            "choices": [
+                "JavaScript is a markup language designed for visual layouts",
+                "JavaScript can be used to build web-based games that run in the browser",
+                "JavaScript only runs on mobile devices with React Native installed",
+                "JavaScript requires NodeJS to run inside a browser"
+            ],
+            "a": "JavaScript can be used to build web-based games that run in the browser"
+        },
+        {
+            "t": "Which of the following best describes what makes JavaScript a \"scripting language\"?",
+            "type": "mc",
+            "choices": [
+                "It requires compilation before execution and has strict type enforcement",
+                "It is a heavyweight language used only for server-side processing",
+                "It is a lightweight programming language interpreted directly by the browser",
+                "It can only run after being converted into machine code by a separate compiler"
+            ],
+            "a": "It is a lightweight programming language interpreted directly by the browser"
+        },
+        {
+            "t": "Match each scenario to the JavaScript capability it demonstrates.",
+            "type": "match",
+            "a": {
+                "A website remembers your login preferences even after you close and reopen the browser": "Create cookies",
+                "A checkout page alerts the user that their email field is empty before sending anything to the server": "Validate data",
+                "Clicking a button on a webpage triggers a pop-up message to appear": "React to events",
+                "A news site automatically updates the headline text on the page without reloading": "Put dynamic text into an HTML page",
+                "A website loads a different layout depending on whether the user is on Chrome or Firefox": "Detect the visitor's browser"
+            }
+        },
+        {
+            "t": "JavaScript function logic is written between _____.",
+            "type": "id",
+            "a": "curly brackets `{ }`",
+            "alt": [
+                "curly brackets { }",
+                "curly brackets ` `"
+            ]
+        },
+        {
+            "t": "Arrow functions are not _____. They must be defined before they are used.",
+            "type": "id",
+            "a": "hoisted"
+        },
+        {
+            "t": "A function that is invoked automatically without being explicitly called is called an _____.",
+            "type": "id",
+            "a": "IIFE (Immediately Invoked Function Expression)",
+            "alt": [
+                "IIFE Immediately Invoked Function Expression",
+                "IIFE",
+                "Immediately Invoked Function Expression"
+            ]
+        },
+        {
+            "t": "By default, every function that does not explicitly return a value returns _____.",
+            "type": "id",
+            "a": "`undefined`",
+            "alt": [
+                "undefined"
+            ]
+        },
+        {
+            "t": "A developer writes the following code and calls it before the function definition appears. This will throw a reference error because the function hasn't been defined yet.\n\n```js\ngreet()\nfunction greet() {\n  console.log(\"Hello!\")\n}\n```",
+            "type": "tf",
+            "a": "False"
+        },
+        {
+            "t": "A student claims that an external `.js` file can contain `<script>` tags inside it to organize code better.",
+            "type": "tf",
+            "a": "False"
+        },
+        {
+            "t": "Arrow functions eliminate the need to write the `function` keyword, the `return` keyword, and curly brackets when written in shorthand form.",
+            "type": "tf",
+            "a": "True"
+        },
+        {
+            "t": "A developer wants to output a value directly into the browser's developer console for debugging purposes. Which output method should they use?",
+            "type": "mc",
+            "choices": [
+                "`document.write()`",
+                "`innerHTML`",
+                "`window.alert()`",
+                "`console.log()`"
+            ],
+            "a": "`console.log()`"
+        },
+        {
+            "t": "A junior developer writes `let 2score = 100;`. Why is this invalid?",
+            "type": "mc",
+            "choices": [
+                "JavaScript variables cannot store numbers",
+                "Identifiers cannot start with a digit",
+                "The `let` keyword is reserved for strings only",
+                "Variable names cannot contain the letter \"e\""
+            ],
+            "a": "Identifiers cannot start with a digit"
+        },
+        {
+            "t": "A team of developers keeps introducing bugs by passing arguments to a many-parameter function in the wrong order. Which approach best solves this?",
+            "type": "mc",
+            "choices": [
+                "Using trailing commas",
+                "Using the spread operator with an array",
+                "Using object destructuring to name parameters",
+                "Using an IIFE instead of a regular function"
+            ],
+            "a": "Using object destructuring to name parameters"
+        },
+        {
+            "t": "Match each code pattern to the function type it represents.",
+            "type": "match",
+            "a": {
+                "`function greet() { console.log(\"hi\") }`": "Function Declaration (pre-ES6)",
+                "`const greet = function() { console.log(\"hi\") }`": "Anonymous Function Expression",
+                "`const greet = () => console.log(\"hi\")`": "Arrow Function",
+                "`const greet = function hello() { console.log(\"hi\") }`": "Named Function Expression",
+                "`(function() { console.log(\"hi\") })()`": "IIFE"
+            }
+        },
+        {
+            "t": "The two main categories of control statements in JavaScript are _____ and _____.",
+            "type": "id",
+            "a": "Conditional Control Statements, Looping/Iterative Control Statements",
+            "alt": [
+                "conditional and looping",
+                "conditional, looping",
+                "conditional statements, looping statements"
+            ]
+        },
+        {
+            "t": "In a `switch` case, the _____ statement is used to terminate a sequence and prevent fall-through to the next case.",
+            "type": "id",
+            "a": "`break`",
+            "alt": [
+                "break"
+            ]
+        },
+        {
+            "t": "A `do...while` loop checks its condition _____ executing the block of code, making it an exit control loop.",
+            "type": "id",
+            "a": "after"
+        },
+        {
+            "t": "A developer writes a `switch` statement but forgets to include any `break` statements between cases. The program will still only execute the matched case and stop automatically.",
+            "type": "tf",
+            "a": "False"
+        },
+        {
+            "t": "A `do...while` loop guarantees that the code block runs at least once, even if the condition is false from the start.",
+            "type": "tf",
+            "a": "True"
+        },
+        {
+            "t": "A `while` loop is best used when you already know exactly how many times the loop needs to run before it starts.",
+            "type": "tf",
+            "a": "False"
+        },
+        {
+            "t": "A student is building a grade classifier that checks if a score is \"Excellent\", \"Passing\", or \"Failing\" based on ranges. Which control structure is most appropriate?",
+            "type": "mc",
+            "choices": [
+                "`switch` case",
+                "`if-else if` ladder",
+                "`do...while` loop",
+                "`for` loop"
+            ],
+            "a": "`if-else if` ladder"
+        },
+        {
+            "t": "An e-commerce system needs to apply discount rates based on customer type: \"senior\" gets 12%, \"regular\" gets 10%, and anything else gets 0%. Which structure directly demonstrates this pattern?",
+            "type": "mc",
+            "choices": [
+                "Nested `if` statements",
+                "`for` loop with a counter",
+                "`switch` case with a `default`",
+                "`while` loop with a Boolean condition"
+            ],
+            "a": "`switch` case with a `default`"
+        },
+        {
+            "t": "A developer needs a loop that keeps prompting the user until the correct PIN is entered, but must always show the prompt at least once. Which loop fits this requirement?",
+            "type": "mc",
+            "choices": [
+                "`for` loop",
+                "`while` loop",
+                "`do...while` loop",
+                "`if-else` statement"
+            ],
+            "a": "`do...while` loop"
+        },
+        {
+            "t": "Match each scenario to the correct control structure.",
+            "type": "match",
+            "a": {
+                "A vending machine dispenses a specific item depending on which button (A1, A2, A3) the user pressed": "`switch` case",
+                "A script prints all numbers from 1 to 100 in sequence with a known counter": "`for` loop",
+                "A login system keeps asking for a password and must always ask at least once before checking": "`do...while` loop",
+                "A script checks whether a student passed, failed, or needs remediation based on a score range": "`if-else if` ladder",
+                "A warehouse system skips processing an item if it's already marked as shipped": "`if` statement"
+            }
+        }
+    ]
+}

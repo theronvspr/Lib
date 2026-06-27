@@ -1,20 +1,13 @@
 {
     "quizzes": [
         {
-            "id": "system-integration",
-            "title": "System Integration",
-            "description": "70 questions.",
+            "id": "it-prof-elective",
+            "title": "IT Professional Elective Lec",
+            "description": "Reviewer for Module 1 (HTML Forms) and Module 2 (JS Basics, Functions, and Control Structures).",
             "tags": [
-                "Exam"
-            ]
-        },
-        {
-            "id": "sipp",
-            "title": "Social, Intellectual Property, and Privacy (SIPP)",
-            "description": "50 questions covering censorship, privacy, civil liberties, intellectual property rights, and online security.",
-            "tags": [
-                "Ethics",
-                "Exam"
+                "HTML",
+                "JavaScript",
+                "Reviewer"
             ]
         }
     ]
