@@ -3,7 +3,7 @@
 // Bump CACHE_VERSION when you update content to force a refresh.
 // =============================================================================
 
-const CACHE_VERSION = 'v1';
+const CACHE_VERSION = 'v2';
 const CACHE_NAME = `quiz-cache-${CACHE_VERSION}`;
 
 const PRECACHE_URLS = [
@@ -36,34 +36,37 @@ self.addEventListener('activate', event => {
     );
 });
 
-// Fetch: cache-first, falling back to network (and caching the response)
+// Fetch: network-first, falling back to cache
 self.addEventListener('fetch', event => {
+    // Only handle GET requests
+    if (event.request.method !== 'GET') return;
+
     event.respondWith(
-        caches.match(event.request).then(cached => {
-            if (cached) return cached;
-
-            return fetch(event.request).then(response => {
-                // Only cache successful same-origin or font requests
-                if (!response || response.status !== 200) return response;
-
-                const url = new URL(event.request.url);
-                const isSameOrigin = url.origin === location.origin;
-                const isFontAsset = url.hostname === 'fonts.googleapis.com'
-                    || url.hostname === 'fonts.gstatic.com';
-
-                if (isSameOrigin || isFontAsset) {
+        fetch(event.request)
+            .then(response => {
+                // If online and successful, update the cache and return the fresh resource
+                if (response && response.status === 200) {
                     const clone = response.clone();
-                    caches.open(CACHE_NAME).then(cache => cache.put(event.request, clone));
-                }
+                    const url = new URL(event.request.url);
+                    const isSameOrigin = url.origin === location.origin;
+                    const isFontAsset = url.hostname === 'fonts.googleapis.com'
+                        || url.hostname === 'fonts.gstatic.com';
 
+                    if (isSameOrigin || isFontAsset) {
+                        caches.open(CACHE_NAME).then(cache => cache.put(event.request, clone));
+                    }
+                }
                 return response;
-            }).catch(() => {
-                // Offline fallback: if both cache and network fail, return a basic error
-                return new Response('Offline — no cached version available.', {
-                    status: 503,
-                    headers: { 'Content-Type': 'text/plain' }
+            })
+            .catch(() => {
+                // If network fails (offline), load from cache
+                return caches.match(event.request).then(cached => {
+                    if (cached) return cached;
+                    return new Response('Offline — no cached version available.', {
+                        status: 503,
+                        headers: { 'Content-Type': 'text/plain' }
+                    });
                 });
-            });
-        })
+            })
     );
 });

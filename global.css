@@ -96,7 +96,8 @@ body {
     min-height: 100vh;
     display: flex;
     justify-content: center;
-    padding: 2rem 1rem
+    padding: 2rem 1rem;
+    position: relative
 }
 
 .root {
@@ -230,11 +231,56 @@ body {
     border-top: 0.5px solid var(--color-border-tertiary);
     font-size: 11px;
     color: var(--color-text-tertiary);
-    line-height: 1.6
+    line-height: 1.6;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
 }
 
 .idx-footer a {
     color: var(--color-text-secondary);
+    text-decoration: none;
+}
+
+.idx-footer a:hover {
+    text-decoration: underline;
+}
+
+.footer-update-btn {
+    background: var(--color-background-primary);
+    border: 0.5px solid var(--color-border-secondary);
+    color: var(--color-text-secondary);
+    padding: 6px 12px;
+    border-radius: var(--border-radius-md);
+    font-family: inherit;
+    font-size: 10px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+
+.footer-update-btn:hover:not([disabled]) {
+    background: var(--color-background-secondary);
+    color: var(--color-text-primary);
+    border-color: var(--color-border-primary);
+}
+
+.footer-update-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.footer-update-btn.update-available {
+    background: var(--color-background-success);
+    color: var(--color-text-success);
+    border-color: var(--color-border-success);
+    animation: footerBounce 2s infinite ease-in-out;
+}
+
+@keyframes footerBounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-2px); }
 }
 
 /* ==========================================================================
@@ -1294,7 +1340,7 @@ body {
 
 /* ── Theme Switcher Button ── */
 .theme-toggle {
-    position: fixed;
+    position: absolute;
     top: 1.5rem;
     right: 1.5rem;
     background: var(--color-background-primary);

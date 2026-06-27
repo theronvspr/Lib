@@ -15,6 +15,10 @@
         <div id="app">
             <div class="idx-loading">Loading quizzes…</div>
         </div>
+        <footer class="idx-footer">
+            <span>Quiz App v2</span>
+            <button id="update-btn" class="footer-update-btn">Check for updates</button>
+        </footer>
     </div>
     <script>
         const app = document.getElementById('app');
@@ -73,9 +77,61 @@
 
         init();
 
-        // Service Worker registration
+        // Service Worker registration & updates
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('./sw.js').catch(() => {});
+            navigator.serviceWorker.register('./sw.js').then(reg => {
+                const btn = document.getElementById('update-btn');
+                if (!btn) return;
+
+                function showUpdateBtn() {
+                    btn.classList.add('update-available');
+                    btn.textContent = 'Update available! Click to reload';
+                    btn.disabled = false;
+                }
+
+                // If there's already a waiting worker, show the update button immediately
+                if (reg.waiting) {
+                    showUpdateBtn();
+                }
+
+                // Monitor for updates
+                reg.addEventListener('updatefound', () => {
+                    const newWorker = reg.installing;
+                    newWorker.addEventListener('statechange', () => {
+                        if (newWorker.state === 'installed') {
+                            if (navigator.serviceWorker.controller) {
+                                showUpdateBtn();
+                            }
+                        }
+                    });
+                });
+
+                btn.addEventListener('click', () => {
+                    if (btn.classList.contains('update-available')) {
+                        window.location.reload();
+                        return;
+                    }
+
+                    btn.disabled = true;
+                    btn.textContent = 'Checking...';
+                    
+                    let updateFound = false;
+                    const checkTimeout = setTimeout(() => {
+                        if (!updateFound) {
+                            btn.textContent = 'Up to date!';
+                            setTimeout(() => {
+                                btn.disabled = false;
+                                btn.textContent = 'Check for updates';
+                            }, 2000);
+                        }
+                    }, 1500);
+
+                    reg.update().catch(() => {
+                        btn.disabled = false;
+                        btn.textContent = 'Error checking updates';
+                    });
+                });
+            }).catch(() => {});
         }
     </script>
 </body>

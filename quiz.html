@@ -15,6 +15,10 @@
         <div class="qz" id="app">
             <div class="idx-loading">Loading quiz…</div>
         </div>
+        <footer class="idx-footer" id="quiz-footer">
+            <span>Quiz App v2</span>
+            <button id="update-btn" class="footer-update-btn">Check for updates</button>
+        </footer>
     </div>
     <script>
         // =============================================================================
@@ -271,6 +275,18 @@
             else if (state.screen === 'results') { app.innerHTML = renderResults(); bindResults(); }
             if (document.scrollingElement) document.scrollingElement.scrollTop = scrollY;
             if (focusId) { const el = document.getElementById(focusId); if (el && el.focus) el.focus(); }
+
+            // Disable/hide theme toggle button during quiz to prevent collision and distraction
+            const themeToggleBtn = document.getElementById('theme-toggle-btn');
+            if (themeToggleBtn) {
+                themeToggleBtn.style.display = (state.screen === 'quiz') ? 'none' : '';
+            }
+
+            // Hide footer during quiz
+            const footer = document.getElementById('quiz-footer');
+            if (footer) {
+                footer.style.display = (state.screen === 'quiz') ? 'none' : '';
+            }
         }
 
         // ── Setup ──
@@ -344,7 +360,7 @@
     <span class="q-score">Score: ${score}/${state.results.filter(r => !r.noAnswer).length}${state.infiniteMode ? ' · <span class="q-remaining-badge">' + (state.quiz.length - state.idx - 1) + ' remaining</span>' : ''}</span>
   </div>
   <div class="q-card">
-    <div class="q-num">Question ${state.results.length + 1}${state.infiniteMode ? '' : ' of ' + total}</div>
+    <div class="q-num">Question ${state.idx + 1}${state.infiniteMode ? '' : ' of ' + total}</div>
     <div class="q-text">${escapeHtml(q.t)}</div>
     <div class="q-no-answer-warning">⚠ This question has no verified answer and cannot be scored.</div>
   </div>
@@ -620,7 +636,7 @@
     <span class="q-score">Score: ${score}/${state.results.filter(r => !r.noAnswer).length}${state.infiniteMode ? ' · <span class="q-remaining-badge">' + (state.quiz.length - state.idx - 1) + ' remaining</span>' : ''}</span>
   </div>
   <div class="q-card">
-    <div class="q-num">Question ${state.results.length + 1}${state.infiniteMode ? '' : ' of ' + total}</div>
+    <div class="q-num">Question ${state.idx + 1}${state.infiniteMode ? '' : ' of ' + total}</div>
     <div class="q-text">${escapeHtml(q.t)}</div>
     ${answerBlock}
     ${feedback}
@@ -893,9 +909,61 @@
 
         init();
 
-        // Service Worker registration
+        // Service Worker registration & updates
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('./sw.js').catch(() => {});
+            navigator.serviceWorker.register('./sw.js').then(reg => {
+                const btn = document.getElementById('update-btn');
+                if (!btn) return;
+
+                function showUpdateBtn() {
+                    btn.classList.add('update-available');
+                    btn.textContent = 'Update available! Click to reload';
+                    btn.disabled = false;
+                }
+
+                // If there's already a waiting worker, show the update button immediately
+                if (reg.waiting) {
+                    showUpdateBtn();
+                }
+
+                // Monitor for updates
+                reg.addEventListener('updatefound', () => {
+                    const newWorker = reg.installing;
+                    newWorker.addEventListener('statechange', () => {
+                        if (newWorker.state === 'installed') {
+                            if (navigator.serviceWorker.controller) {
+                                showUpdateBtn();
+                            }
+                        }
+                    });
+                });
+
+                btn.addEventListener('click', () => {
+                    if (btn.classList.contains('update-available')) {
+                        window.location.reload();
+                        return;
+                    }
+
+                    btn.disabled = true;
+                    btn.textContent = 'Checking...';
+                    
+                    let updateFound = false;
+                    const checkTimeout = setTimeout(() => {
+                        if (!updateFound) {
+                            btn.textContent = 'Up to date!';
+                            setTimeout(() => {
+                                btn.disabled = false;
+                                btn.textContent = 'Check for updates';
+                            }, 2000);
+                        }
+                    }, 1500);
+
+                    reg.update().catch(() => {
+                        btn.disabled = false;
+                        btn.textContent = 'Error checking updates';
+                    });
+                });
+            }).catch(() => {});
         }
     </script>
 </body>
