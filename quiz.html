@@ -56,12 +56,15 @@
         }
 
         let QS = [];
+        let QS_ALL = [];
+        let QUIZ_VERSIONS = [];
         let QUIZ_TITLE = "Quiz";
         let QUIZ_SUBTITLE = "Select question types to include, then start.";
         let QUIZ_ID = '';
 
         let state = {
             screen: 'loading',
+            selectedVersion: null,
             selTypes: new Set(),
             shuffle: true,
             infiniteMode: false,
@@ -88,6 +91,13 @@
                 [a[i], a[j]] = [a[j], a[i]];
             }
             return a;
+        }
+
+        function getFilteredQS() {
+            if (QUIZ_VERSIONS.length > 0 && state.selectedVersion) {
+                return QS_ALL.filter(q => q.section === state.selectedVersion);
+            }
+            return QS_ALL;
         }
 
         function getAvailableTypes() {
@@ -198,11 +208,16 @@
                     return;
                 }
 
-                QS = data.questions;
+                QS_ALL = data.questions;
+                QUIZ_VERSIONS = data.versions || [];
                 QUIZ_TITLE = data.title || QUIZ_ID;
                 QUIZ_SUBTITLE = data.subtitle || "Select question types to include, then start.";
                 document.title = QUIZ_TITLE + " — Quiz";
 
+                if (QUIZ_VERSIONS.length > 0) {
+                    state.selectedVersion = QUIZ_VERSIONS[0].key;
+                }
+                QS = getFilteredQS();
                 state.selTypes = new Set(getAvailableTypes());
                 state.screen = 'setup';
                 render();
@@ -303,9 +318,28 @@
       <div class="mod-tile-meta">${meta.desc} · ${count}q</div>
     </div>`;
             }).join('');
+
+            let versionBlock = '';
+            if (QUIZ_VERSIONS.length > 0) {
+                const vTiles = QUIZ_VERSIONS.map(v => {
+                    const sel = state.selectedVersion === v.key;
+                    const vCount = QS_ALL.filter(q => q.section === v.key).length;
+                    return `<div class="version-tile${sel ? ' sel' : ''}" data-version="${escapeAttr(v.key)}">
+                        <div class="version-radio">${sel ? '<span class="version-dot-fill"></span>' : ''}</div>
+                        <div class="version-info">
+                            <div class="version-label">${escapeHtml(v.label)}</div>
+                            <div class="version-count">${vCount} questions</div>
+                        </div>
+                    </div>`;
+                }).join('');
+                versionBlock = `<div class="section-label">Version</div>
+                    <div class="version-grid">${vTiles}</div>`;
+            }
+
             return `<a class="quiz-back" href="index.html">← All quizzes</a>
   <div class="setup-title">${escapeHtml(QUIZ_TITLE)}</div>
   <div class="setup-sub">${escapeHtml(QUIZ_SUBTITLE)}</div>
+  ${versionBlock}
   <div class="section-label">Customize</div>
   <div class="mod-grid">${tiles}</div>
   <div class="sel-row">
@@ -322,6 +356,14 @@
         }
 
         function bindSetup() {
+            document.querySelectorAll('.version-tile').forEach(el => {
+                el.addEventListener('click', () => {
+                    state.selectedVersion = el.dataset.version;
+                    QS = getFilteredQS();
+                    state.selTypes = new Set(getAvailableTypes());
+                    render();
+                });
+            });
             document.querySelectorAll('.mod-tile').forEach(el => {
                 el.addEventListener('click', () => {
                     const t = el.dataset.type;

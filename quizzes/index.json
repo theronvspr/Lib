@@ -9,6 +9,18 @@
                 "JavaScript",
                 "Reviewer"
             ]
+        },
+        {
+            "id": "it-prof-finals",
+            "title": "IT Professional Elective — Finals Reviewer",
+            "description": "Modules 1, 2 & 4 + Midterm coverage. Choose from Multiple Choice, Identification, or Midterm quiz versions.",
+            "tags": [
+                "HTML",
+                "JavaScript",
+                "DOM",
+                "Finals",
+                "Reviewer"
+            ]
         }
     ]
 }
