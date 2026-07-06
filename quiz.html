@@ -66,6 +66,7 @@
             screen: 'loading',
             selectedVersion: null,
             selTypes: new Set(),
+            selModules: new Set([1, 2, 4]),
             shuffle: true,
             infiniteMode: false,
             quiz: [],
@@ -239,7 +240,7 @@
         // =============================================================================
 
         function startQuiz() {
-            let pool = QS.filter(q => state.selTypes.has(q.type));
+            let pool = QS.filter(q => state.selTypes.has(q.type) && (!q.module || state.selModules.has(q.module)));
             if (state.shuffle) pool = shuffleArr(pool);
             state.originalPool = pool.map(q => ({ ...q }));
             state.originalTotal = pool.length;
@@ -308,11 +309,16 @@
 
         function renderSetup() {
             const types = getAvailableTypes();
-            const totalQ = QS.filter(q => state.selTypes.has(q.type)).length;
+            const hasModules = QS.some(q => q.module !== undefined);
+            
+            // Calculate totalQ based on both selected types and modules
+            const totalQ = QS.filter(q => state.selTypes.has(q.type) && (!q.module || state.selModules.has(q.module))).length;
+            
             const tiles = types.map(t => {
                 const meta = TYPE_META[t];
                 const sel = state.selTypes.has(t);
-                const count = typeCount(t);
+                // Count filtered by selected modules
+                const count = QS.filter(q => q.type === t && (!q.module || state.selModules.has(q.module))).length;
                 return `<div class="mod-tile${sel ? ' sel' : ''}" data-type="${t}">
       <div class="mod-tile-name">${meta.label}</div>
       <div class="mod-tile-meta">${meta.desc} · ${count}q</div>
@@ -336,13 +342,36 @@
                     <div class="version-grid">${vTiles}</div>`;
             }
 
+            let moduleBlock = '';
+            if (hasModules) {
+                const availableModules = [...new Set(QS.map(q => q.module).filter(m => m !== undefined))].sort((a,b)=>a-b);
+                const mLabels = {
+                    1: "Module 1: HTML Forms",
+                    2: "Module 2: JavaScript Basics & Logic",
+                    4: "Module 4: Document Object Model (DOM)"
+                };
+                const mItems = availableModules.map(m => {
+                    const checked = state.selModules.has(m);
+                    const label = mLabels[m] || `Module ${m}`;
+                    const mCount = QS.filter(q => q.module === m && state.selTypes.has(q.type)).length;
+                    return `<div class="mod-tile${checked ? ' sel' : ''}" data-module="${m}">
+                        <div class="mod-tile-name">${label}</div>
+                        <div class="mod-tile-meta">${mCount}q</div>
+                    </div>`;
+                }).join('');
+                
+                moduleBlock = `<div class="section-label">Modules</div>
+                    <div class="mod-grid">${mItems}</div>`;
+            }
+
             return `<a class="quiz-back" href="index.html">← All quizzes</a>
   <div class="setup-title">${escapeHtml(QUIZ_TITLE)}</div>
   <div class="setup-sub">${escapeHtml(QUIZ_SUBTITLE)}</div>
   ${versionBlock}
-  <div class="section-label">Customize</div>
+  ${moduleBlock}
+  <div class="section-label">Question Types</div>
   <div class="mod-grid">${tiles}</div>
-  <div class="sel-row">
+  <div class="sel-row" style="${hasModules ? 'display:none' : ''}">
     <button class="sel-link" id="sel-all">Select all</button>
     <button class="sel-link" id="sel-none">Deselect all</button>
   </div>
@@ -364,15 +393,24 @@
                     render();
                 });
             });
-            document.querySelectorAll('.mod-tile').forEach(el => {
+            document.querySelectorAll('.mod-tile[data-type]').forEach(el => {
                 el.addEventListener('click', () => {
                     const t = el.dataset.type;
                     if (state.selTypes.has(t)) state.selTypes.delete(t); else state.selTypes.add(t);
                     render();
                 });
             });
-            document.getElementById('sel-all').addEventListener('click', () => { state.selTypes = new Set(getAvailableTypes()); render(); });
-            document.getElementById('sel-none').addEventListener('click', () => { state.selTypes = new Set(); render(); });
+            document.querySelectorAll('.mod-tile[data-module]').forEach(el => {
+                el.addEventListener('click', () => {
+                    const m = parseInt(el.dataset.module);
+                    if (state.selModules.has(m)) state.selModules.delete(m); else state.selModules.add(m);
+                    render();
+                });
+            });
+            const selAll = document.getElementById('sel-all');
+            if (selAll) selAll.addEventListener('click', () => { state.selTypes = new Set(getAvailableTypes()); render(); });
+            const selNone = document.getElementById('sel-none');
+            if (selNone) selNone.addEventListener('click', () => { state.selTypes = new Set(); render(); });
             document.getElementById('shuffle-chk').addEventListener('change', e => { state.shuffle = e.target.checked; });
             document.getElementById('infinite-chk').addEventListener('change', e => { state.infiniteMode = e.target.checked; });
             const sb = document.getElementById('start-btn');
