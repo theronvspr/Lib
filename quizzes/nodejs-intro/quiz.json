@@ -1,6 +1,6 @@
 {
     "title": "Introduction to Node.js",
-    "subtitle": "Test your knowledge on Node.js fundamentals, architecture, core modules, and basic server implementation.",
+    "subtitle": "Test your knowledge on Node.js fundamentals, architecture, core modules, advantages, and server implementation.",
     "questions": [
         {
             "t": "Who developed Node.js and in what year was it released?",
@@ -69,6 +69,226 @@
             "a": "res.writeHead()"
         },
         {
+            "t": "What are the three important parts of a Node.js application?",
+            "type": "mc",
+            "choices": [
+                "Install packages, write HTML, deploy to server",
+                "Import required module, create server, read request and return response",
+                "Create database, define routes, render templates",
+                "Initialize npm, install Express, create middleware"
+            ],
+            "a": "Import required module, create server, read request and return response"
+        },
+        {
+            "t": "What directive is used to load (import) a JavaScript module in Node.js?",
+            "type": "mc",
+            "choices": [
+                "import",
+                "include",
+                "require",
+                "load"
+            ],
+            "a": "require"
+        },
+        {
+            "t": "In the line 'const http = require('http');', what does require('http') do?",
+            "type": "mc",
+            "choices": [
+                "Downloads the http module from the internet",
+                "Creates a new HTTP server",
+                "Imports the built-in HTTP module in Node.js",
+                "Sends an HTTP request to a remote server"
+            ],
+            "a": "Imports the built-in HTTP module in Node.js"
+        },
+        {
+            "t": "What does the http.createServer() method return?",
+            "type": "mc",
+            "choices": [
+                "A URL object",
+                "An HTTP server instance",
+                "A request object",
+                "A JSON response"
+            ],
+            "a": "An HTTP server instance"
+        },
+        {
+            "t": "What is the callback function passed to http.createServer() commonly referred to as?",
+            "type": "mc",
+            "choices": [
+                "Event emitter",
+                "Request handler or request listener",
+                "Server constructor",
+                "Module loader"
+            ],
+            "a": "Request handler or request listener"
+        },
+        {
+            "t": "In the createServer callback '(req, res) => { ... }', what does the 'req' parameter represent?",
+            "type": "mc",
+            "choices": [
+                "The server's response",
+                "The incoming request",
+                "The server configuration",
+                "The database query"
+            ],
+            "a": "The incoming request"
+        },
+        {
+            "t": "In the createServer callback '(req, res) => { ... }', what does the 'res' parameter represent?",
+            "type": "mc",
+            "choices": [
+                "The incoming request",
+                "The server's response",
+                "The resource path",
+                "The result set from a database"
+            ],
+            "a": "The server's response"
+        },
+        {
+            "t": "What does the '=>' symbol in JavaScript represent?",
+            "type": "mc",
+            "choices": [
+                "A comparison operator",
+                "An assignment operator",
+                "An arrow function (fat arrow notation)",
+                "A bitwise shift operator"
+            ],
+            "a": "An arrow function (fat arrow notation)"
+        },
+        {
+            "t": "In res.writeHead(200, { 'Content-Type': 'text/html' }), what does { 'Content-Type': 'text/html' } specify?",
+            "type": "mc",
+            "choices": [
+                "The request body format",
+                "The response headers, indicating the body will be in HTML format",
+                "The server port number",
+                "The encoding type for the URL"
+            ],
+            "a": "The response headers, indicating the body will be in HTML format"
+        },
+        {
+            "t": "What does the res.write() method do in Node.js?",
+            "type": "mc",
+            "choices": [
+                "Writes data to the file system",
+                "Writes data to the response body in chunks",
+                "Writes data to the console",
+                "Writes data to the database"
+            ],
+            "a": "Writes data to the response body in chunks"
+        },
+        {
+            "t": "What does Hello.listen(8080, callback) do in a Node.js application?",
+            "type": "mc",
+            "choices": [
+                "Sends a request to port 8080",
+                "Opens a browser window at port 8080",
+                "Sets up the HTTP server to listen for incoming requests on port 8080",
+                "Installs a module on port 8080"
+            ],
+            "a": "Sets up the HTTP server to listen for incoming requests on port 8080"
+        },
+        {
+            "t": "What is the package.json file in a Node.js project?",
+            "type": "mc",
+            "choices": [
+                "A JavaScript file that runs the server",
+                "A metadata file that provides information about the project and its dependencies",
+                "A configuration file for the database",
+                "A log file that records server errors"
+            ],
+            "a": "A metadata file that provides information about the project and its dependencies"
+        },
+        {
+            "t": "Which of the following is NOT an advantage of Node.js mentioned in the material?",
+            "type": "mc",
+            "choices": [
+                "Open Source",
+                "Better Performance due to non-blocking I/O",
+                "Built-in database management system",
+                "REST API Support"
+            ],
+            "a": "Built-in database management system"
+        },
+        {
+            "t": "How does Node.js achieve better performance?",
+            "type": "mc",
+            "choices": [
+                "By using multiple threads for each request",
+                "By compiling code to machine language before execution",
+                "Because its I/O operations are non-blocking",
+                "By using a built-in caching layer"
+            ],
+            "a": "Because its I/O operations are non-blocking"
+        },
+        {
+            "t": "What are the two ways Node.js applications can be scaled?",
+            "type": "mc",
+            "choices": [
+                "Manual Scaling and Automatic Scaling",
+                "Horizontal Scaling and Vertical Scaling",
+                "Linear Scaling and Exponential Scaling",
+                "Internal Scaling and External Scaling"
+            ],
+            "a": "Horizontal Scaling and Vertical Scaling"
+        },
+        {
+            "t": "Why is Node.js described as 'Lightweight and Extensible'?",
+            "type": "mc",
+            "choices": [
+                "It can only run small applications",
+                "It is based on JavaScript, can run on client and server side, and supports JSON data exchange",
+                "It requires very little disk space to install",
+                "It uses a compiled language for efficiency"
+            ],
+            "a": "It is based on JavaScript, can run on client and server side, and supports JSON data exchange"
+        },
+        {
+            "t": "Which of the following is a correct step in setting up a Node.js project?",
+            "type": "mc",
+            "choices": [
+                "Run 'npm init' to create a package.json, then run the .js file with 'node filename.js'",
+                "Run 'node init' to create a package.json, then run the .js file with 'npm filename.js'",
+                "Run 'npm start' to create a package.json, then run the .js file with 'js filename.node'",
+                "Run 'node install' to create a package.json, then run the .js file with 'run filename.js'"
+            ],
+            "a": "Run 'npm init' to create a package.json, then run the .js file with 'node filename.js'"
+        },
+        {
+            "t": "After running a Node.js server file, where do you view the output?",
+            "type": "mc",
+            "choices": [
+                "In the Node.js installer",
+                "In the text editor where you wrote the code",
+                "In the browser at the given port (e.g., http://localhost:8080)",
+                "In the package.json file"
+            ],
+            "a": "In the browser at the given port (e.g., http://localhost:8080)"
+        },
+        {
+            "t": "Which of the following is NOT a core module in Node.js?",
+            "type": "mc",
+            "choices": [
+                "console",
+                "dns",
+                "express",
+                "debugger"
+            ],
+            "a": "express"
+        },
+        {
+            "t": "What is npm in the Node.js ecosystem?",
+            "type": "mc",
+            "choices": [
+                "A JavaScript compiler",
+                "The Node Package Manager, used to manage project dependencies",
+                "A built-in database for Node.js",
+                "A browser extension for debugging Node.js"
+            ],
+            "a": "The Node Package Manager, used to manage project dependencies"
+        },
+        {
             "t": "Node.js uses JavaScript as a single programming language across both front-end and back-end development.",
             "type": "tf",
             "a": "True"
@@ -85,6 +305,61 @@
         },
         {
             "t": "Streams in Node.js are objects that let you read data or write data continuously.",
+            "type": "tf",
+            "a": "True"
+        },
+        {
+            "t": "The require() directive is used to load built-in or external modules in Node.js.",
+            "type": "tf",
+            "a": "True"
+        },
+        {
+            "t": "The createServer() method takes a callback function that runs whenever the server receives a request.",
+            "type": "tf",
+            "a": "True"
+        },
+        {
+            "t": "In Node.js, the res.write() method can only be called once per response.",
+            "type": "tf",
+            "a": "False"
+        },
+        {
+            "t": "Node.js is open source and free to use with no license fees required.",
+            "type": "tf",
+            "a": "True"
+        },
+        {
+            "t": "Node.js can only be used for back-end development and cannot interact with front-end code.",
+            "type": "tf",
+            "a": "False"
+        },
+        {
+            "t": "The package.json file is essential for managing and sharing your Node.js project with others.",
+            "type": "tf",
+            "a": "True"
+        },
+        {
+            "t": "The 'cluster' module in Node.js allows the creation of child processes to overcome the single-threaded limitation.",
+            "type": "tf",
+            "a": "True"
+        },
+        {
+            "t": "When res.end() is called without any data, it signals the end of the response without any additional content in the response body.",
+            "type": "tf",
+            "a": "True"
+        },
+        {
+            "t": "Node.js supports the exchange of data using JSON, which is easily consumed by JavaScript.",
+            "type": "tf",
+            "a": "True"
+        },
+        {
+            "t": "The '=>' arrow function syntax in JavaScript can only be used inside Node.js and not in browser JavaScript.",
+            "type": "tf",
+            "a": "False"
+        },
+        {
+            "t": "Node.js provides REST API support, making it easy to develop RESTful services.",
             "type": "tf",
             "a": "True"
         },
@@ -118,6 +393,39 @@
             "t": "What HTTP status code is used in res.writeHead(200, ...) to indicate that the request has been successfully processed?",
             "type": "id",
             "a": "200"
+        },
+        {
+            "t": "What method is used to write data to the response body in chunks in Node.js?",
+            "type": "id",
+            "a": "res.write()",
+            "alt": [
+                "res.write",
+                "write()",
+                "write"
+            ]
+        },
+        {
+            "t": "What method is used to create an HTTP server instance in Node.js?",
+            "type": "id",
+            "a": "http.createServer()",
+            "alt": [
+                "http.createServer",
+                "createServer()",
+                "createServer"
+            ]
+        },
+        {
+            "t": "Which core module in Node.js is used for resolving domain names to IP addresses?",
+            "type": "id",
+            "a": "dns",
+            "alt": [
+                "DNS"
+            ]
+        },
+        {
+            "t": "What is the default port number used in the Hello World example from the material?",
+            "type": "id",
+            "a": "8080"
         }
     ]
 }
