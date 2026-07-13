@@ -1,0 +1,123 @@
+{
+    "title": "Introduction to Node.js",
+    "subtitle": "Test your knowledge on Node.js fundamentals, architecture, core modules, and basic server implementation.",
+    "questions": [
+        {
+            "t": "Who developed Node.js and in what year was it released?",
+            "type": "mc",
+            "choices": [
+                "Brendan Eich, 1995",
+                "Ryan Dahl, 2009",
+                "James Gosling, 1995",
+                "Guido van Rossum, 1991"
+            ],
+            "a": "Ryan Dahl, 2009"
+        },
+        {
+            "t": "Which of the following best describes the architecture of Node.js?",
+            "type": "mc",
+            "choices": [
+                "Multi-threaded, blocking, event-driven",
+                "Single-threaded, non-blocking, event-driven",
+                "Single-threaded, blocking, synchronous",
+                "Multi-threaded, non-blocking, synchronous"
+            ],
+            "a": "Single-threaded, non-blocking, event-driven"
+        },
+        {
+            "t": "Which built-in Node.js module allows you to create an HTTP server, make HTTP requests, and handle HTTP responses?",
+            "type": "mc",
+            "choices": [
+                "fs",
+                "url",
+                "http",
+                "stream"
+            ],
+            "a": "http"
+        },
+        {
+            "t": "Which core module is used to deal with file input/output (I/O) operations in Node.js?",
+            "type": "mc",
+            "choices": [
+                "path",
+                "fs",
+                "util",
+                "zlib"
+            ],
+            "a": "fs"
+        },
+        {
+            "t": "How does Node.js overcome its single-threaded limitation to support multi-threading?",
+            "type": "mc",
+            "choices": [
+                "Using the fs module",
+                "Using the cluster module to create child processes",
+                "Using browser APIs",
+                "By default, Node.js is multi-threaded and does not have this limitation"
+            ],
+            "a": "Using the cluster module to create child processes"
+        },
+        {
+            "t": "Which method of the http.ServerResponse object is used to set the status code and headers before sending the response body?",
+            "type": "mc",
+            "choices": [
+                "res.write()",
+                "res.end()",
+                "res.writeHead()",
+                "res.setHeader()"
+            ],
+            "a": "res.writeHead()"
+        },
+        {
+            "t": "Node.js uses JavaScript as a single programming language across both front-end and back-end development.",
+            "type": "tf",
+            "a": "True"
+        },
+        {
+            "t": "The command 'npm init' is used to execute a JavaScript file using the Node.js runtime.",
+            "type": "tf",
+            "a": "False"
+        },
+        {
+            "t": "In Node.js, res.end() must be called to signal the end of the response and complete the network handshake.",
+            "type": "tf",
+            "a": "True"
+        },
+        {
+            "t": "Streams in Node.js are objects that let you read data or write data continuously.",
+            "type": "tf",
+            "a": "True"
+        },
+        {
+            "t": "What command is used to initialize a new Node.js project and create a package.json file?",
+            "type": "id",
+            "a": "npm init"
+        },
+        {
+            "t": "Which command in the terminal or command prompt is used to execute a JavaScript file named server.js with the Node.js runtime?",
+            "type": "id",
+            "a": "node server.js",
+            "alt": [
+                "node server"
+            ]
+        },
+        {
+            "t": "Which global object in Node.js specifies the name of the directory that contains the code of the application?",
+            "type": "id",
+            "a": "__dirname"
+        },
+        {
+            "t": "Which built-in Node.js module is used to handle streams that contain only binary data?",
+            "type": "id",
+            "a": "buffer",
+            "alt": [
+                "Buffer"
+            ]
+        },
+        {
+            "t": "What HTTP status code is used in res.writeHead(200, ...) to indicate that the request has been successfully processed?",
+            "type": "id",
+            "a": "200"
+        }
+    ]
+}

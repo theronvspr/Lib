@@ -21,6 +21,17 @@
                 "Finals",
                 "Reviewer"
             ]
+        },
+        {
+            "id": "nodejs-intro",
+            "title": "Introduction to Node.js",
+            "description": "Quiz on Node.js fundamentals, architecture, core modules, and basic server implementation.",
+            "tags": [
+                "NodeJS",
+                "Backend",
+                "JavaScript",
+                "Reviewer"
+            ]
         }
     ]
 }
