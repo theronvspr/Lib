@@ -24,8 +24,8 @@
         },
         {
             "id": "nodejs-intro",
-            "title": "Introduction to Node.js",
-            "description": "Quiz on Node.js fundamentals, architecture, core modules, and basic server implementation.",
+            "title": "Module 4 and 5 Node.js",
+            "description": "Quiz on Node.js fundamentals, architecture, core modules, advantages, server implementation, and multi-file web servers.",
             "tags": [
                 "NodeJS",
                 "Backend",
