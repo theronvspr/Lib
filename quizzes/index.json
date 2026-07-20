@@ -32,6 +32,30 @@
                 "JavaScript",
                 "Reviewer"
             ]
+        },
+        {
+            "id": "mongodb-intro",
+            "title": "Module 6 MongoDB",
+            "description": "Quiz on MongoDB fundamentals, installation, commands, data types, Express.js, and EJS templating.",
+            "tags": [
+                "MongoDB",
+                "Express",
+                "EJS",
+                "Backend",
+                "Reviewer"
+            ]
+        },
+        {
+            "id": "ilt-server-security",
+            "title": "Module 6 & 7 Internet Languages and Tools",
+            "description": "Quiz on Server-Side Scripting, Database Connectivity, CRUD, Sessions & Cookies, Dynamic Web Apps, and Web Security.",
+            "tags": [
+                "Server-Side",
+                "Web Security",
+                "Database",
+                "Encryption",
+                "Reviewer"
+            ]
         }
     ]
 }

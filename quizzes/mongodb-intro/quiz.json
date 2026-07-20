@@ -1,0 +1,363 @@
+{
+    "title": "Module 6 MongoDB",
+    "subtitle": "Test your knowledge on MongoDB fundamentals, installation, commands, Express.js, and EJS templating.",
+    "questions": [
+        {
+            "t": "This popular NoSQL database is known for its flexibility, scalability, and performance, and is an open-source document-oriented database.",
+            "module": 6,
+            "type": "id",
+            "a": "MongoDB",
+            "alt": ["mongodb"]
+        },
+        {
+            "t": "MongoDB uses this binary format (Binary JSON) to query the database and store data as documents.",
+            "module": 6,
+            "type": "id",
+            "a": "BSON",
+            "alt": ["Binary JSON", "bson"]
+        },
+        {
+            "t": "This MongoDB architecture feature allows you to meet increasing demand by adding more nodes to share the load.",
+            "module": 6,
+            "type": "id",
+            "a": "scale-out",
+            "alt": ["scale-out architecture", "scale out", "horizontal scaling", "scaling out"]
+        },
+        {
+            "t": "The user running MongoDB services (mongod, mongos) must belong to 'Performance Monitor Users' and this other group.",
+            "module": 6,
+            "type": "id",
+            "a": "Performance Log Users",
+            "alt": ["performance log users"]
+        },
+        {
+            "t": "This MongoDB feature provides efficient search and data processing in very little time.",
+            "module": 6,
+            "type": "id",
+            "a": "Indexing",
+            "alt": ["indexing"]
+        },
+        {
+            "t": "This MongoDB feature scales the database horizontally by partitioning data across multiple servers.",
+            "module": 6,
+            "type": "id",
+            "a": "Sharding",
+            "alt": ["sharding"]
+        },
+        {
+            "t": "This MongoDB feature ensures high availability by maintaining multiple copies of data across servers, protecting the database if an active server goes down.",
+            "module": 6,
+            "type": "id",
+            "a": "Replication",
+            "alt": ["replication", "Replication & High Availability"]
+        },
+        {
+            "t": "This MongoDB feature processes data records and returns a computed result, similar to SQL's GROUP BY clause.",
+            "module": 6,
+            "type": "id",
+            "a": "Aggregation",
+            "alt": ["aggregation"]
+        },
+        {
+            "t": "In MongoDB, this is a container for collections, and each one gets its own set of files on the file system.",
+            "module": 6,
+            "type": "id",
+            "a": "Database",
+            "alt": ["database", "db"]
+        },
+        {
+            "t": "In MongoDB, this is a group of documents, similar to a table in relational databases.",
+            "module": 6,
+            "type": "id",
+            "a": "Collection",
+            "alt": ["collection"]
+        },
+        {
+            "t": "In MongoDB, this is a data record stored as a BSON object composed of field-value pairs, analogous to a row in a relational database.",
+            "module": 6,
+            "type": "id",
+            "a": "Document",
+            "alt": ["document"]
+        },
+        {
+            "t": "In a MongoDB document, this is a key-value pair that is analogous to a column in a relational database.",
+            "module": 6,
+            "type": "id",
+            "a": "Field",
+            "alt": ["field", "field name", "Field Name"]
+        },
+        {
+            "t": "This MongoDB command creates a new database if it doesn't exist, or switches to it if it does. Syntax: _____ database_name",
+            "module": 6,
+            "type": "id",
+            "a": "use",
+            "alt": ["use database_name"]
+        },
+        {
+            "t": "This MongoDB command lists all databases and their size on disk.",
+            "module": 6,
+            "type": "id",
+            "a": "show dbs",
+            "alt": ["show databases"]
+        },
+        {
+            "t": "This MongoDB method is used to create a new collection, accepting a name and an optional options document for configuration (e.g., capped, autoIndexID, size).",
+            "module": 6,
+            "type": "id",
+            "a": "db.createCollection()",
+            "alt": ["db.createCollection", "createCollection()", "createCollection"]
+        },
+        {
+            "t": "This MongoDB command lists all collections in the current database.",
+            "module": 6,
+            "type": "id",
+            "a": "show collections",
+            "alt": ["db.getCollectionNames()", "db.getCollectionNames"]
+        },
+        {
+            "t": "This MongoDB method permanently deletes the current database, including all its collections and data.",
+            "module": 6,
+            "type": "id",
+            "a": "db.dropDatabase()",
+            "alt": ["db.dropDatabase", "dropDatabase()", "dropDatabase"]
+        },
+        {
+            "t": "This MongoDB method permanently deletes a single collection and all of its documents.",
+            "module": 6,
+            "type": "id",
+            "a": "db.collection_name.drop()",
+            "alt": ["drop()", "drop", ".drop()"]
+        },
+        {
+            "t": "This MongoDB method inserts a single document into a collection.",
+            "module": 6,
+            "type": "id",
+            "a": "insertOne()",
+            "alt": ["insertOne", "db.collection_name.insertOne()", "db.collection_name.insertOne"]
+        },
+        {
+            "t": "This MongoDB method inserts multiple documents into a collection at once.",
+            "module": 6,
+            "type": "id",
+            "a": "insertMany()",
+            "alt": ["insertMany", "db.collection_name.insertMany()", "db.collection_name.insertMany"]
+        },
+        {
+            "t": "This MongoDB method deletes a single document matching the specified filter from a collection.",
+            "module": 6,
+            "type": "id",
+            "a": "deleteOne()",
+            "alt": ["deleteOne", "db.collection_name.deleteOne()", "db.collection_name.deleteOne"]
+        },
+        {
+            "t": "This MongoDB method deletes all documents matching the specified filter from a collection.",
+            "module": 6,
+            "type": "id",
+            "a": "deleteMany()",
+            "alt": ["deleteMany", "db.collection_name.deleteMany()", "db.collection_name.deleteMany"]
+        },
+        {
+            "t": "This MongoDB method retrieves documents from a collection. When called without arguments, it returns all documents.",
+            "module": 6,
+            "type": "id",
+            "a": "find()",
+            "alt": ["find", "db.collection_name.find()", "db.collection_name.find"]
+        },
+        {
+            "t": "This method is chained to find() to retrieve all documents in a more readable, formatted output.",
+            "module": 6,
+            "type": "id",
+            "a": "pretty()",
+            "alt": ["pretty", ".pretty()", "find().pretty()"]
+        },
+        {
+            "t": "This minimal and flexible Node.js web application framework provides a robust set of features for building web and mobile applications, and is often called the de facto standard server framework for Node.js.",
+            "module": 6,
+            "type": "id",
+            "a": "Express.js",
+            "alt": ["Express", "express", "express.js", "ExpressJS"]
+        },
+        {
+            "t": "In Express.js, these functions can execute code, modify request/response objects, end the request-response cycle, or call the next function in the stack.",
+            "module": 6,
+            "type": "id",
+            "a": "Middleware",
+            "alt": ["middleware", "middleware functions"]
+        },
+        {
+            "t": "Express.js provides a robust mechanism to define these using app.get(), app.post(), app.put(), and app.delete() for different HTTP methods.",
+            "module": 6,
+            "type": "id",
+            "a": "Routes",
+            "alt": ["routes", "routing", "Routing"]
+        },
+        {
+            "t": "Express.js supports Pug, EJS, and Handlebars among others for this purpose — generating dynamic HTML on the server side.",
+            "module": 6,
+            "type": "id",
+            "a": "Template Engines",
+            "alt": ["template engines", "templating engines", "template engine", "templating"]
+        },
+        {
+            "t": "This Express.js middleware serves static files such as images, CSS, and JavaScript files.",
+            "module": 6,
+            "type": "id",
+            "a": "express.static",
+            "alt": ["express.static()", "static"]
+        },
+        {
+            "t": "This templating engine lets you generate HTML markup with plain JavaScript and is commonly used with Node.js and Express.js to build dynamic web pages.",
+            "module": 6,
+            "type": "id",
+            "a": "EJS",
+            "alt": ["ejs", "Embedded JavaScript", "embedded javascript"]
+        },
+        {
+            "t": "In Express.js, this method is called to configure the template engine, as in: app.set('view engine', 'ejs').",
+            "module": 6,
+            "type": "id",
+            "a": "app.set()",
+            "alt": ["app.set", "set()", "set"]
+        },
+        {
+            "t": "In Express.js, this method is used to render a view template and send the rendered HTML string to the client, as in: res.render('index', { name: 'John Doe' }).",
+            "module": 6,
+            "type": "id",
+            "a": "res.render()",
+            "alt": ["res.render", "render()", "render"]
+        },
+        {
+            "t": "This EJS feature supports breaking templates into reusable components, reducing code duplication across views.",
+            "module": 6,
+            "type": "id",
+            "a": "Layout and Partials",
+            "alt": ["layout and partials", "partials", "layouts and partials", "Partials"]
+        },
+        {
+            "t": "After setting environment variables for MongoDB on Windows, you need to copy this folder's path from the MongoDB installation location and add it to the system PATH.",
+            "module": 6,
+            "type": "id",
+            "a": "bin",
+            "alt": ["bin folder", "bin path", "bin directory"]
+        },
+        {
+            "t": "These are the two MongoDB services that require the user to belong to Performance Monitor Users and Performance Log Users groups.",
+            "module": 6,
+            "type": "id",
+            "a": "mongod and mongos",
+            "alt": ["mongod, mongos", "mongos and mongod"]
+        },
+        {
+            "t": "During MongoDB MSI installation, selecting this option installs all program features, as opposed to 'Custom' which lets you choose specific features.",
+            "module": 6,
+            "type": "id",
+            "a": "Complete",
+            "alt": ["complete", "Complete option"]
+        },
+        {
+            "t": "MongoDB supports 14 data types. These include String, Integer, Boolean, Double, Min/Max Keys, Arrays, Timestamp, Null, Symbol, Date, Binary data, Code, Regular expression, and this type that serves as a unique identifier for each document.",
+            "module": 6,
+            "type": "id",
+            "a": "Object ID",
+            "alt": ["ObjectID", "ObjectId", "object id", "Object Id"]
+        },
+        {
+            "t": "This MongoDB data type stores an array of values (e.g., a list of groups a user belongs to) within a single document field.",
+            "module": 6,
+            "type": "id",
+            "a": "Arrays",
+            "alt": ["array", "Array"]
+        },
+        {
+            "t": "This MongoDB data type is used to store a date or time value within a document.",
+            "module": 6,
+            "type": "id",
+            "a": "Date",
+            "alt": ["date"]
+        },
+        {
+            "t": "This MongoDB data type records when a document was created or modified, useful for tracking changes over time.",
+            "module": 6,
+            "type": "id",
+            "a": "Timestamp",
+            "alt": ["timestamp"]
+        },
+        {
+            "t": "These two MongoDB data types are used to compare a value against the lowest and highest BSON elements, respectively.",
+            "module": 6,
+            "type": "id",
+            "a": "Min/Max Keys",
+            "alt": ["min/max keys", "Min Key and Max Key", "MinKey and MaxKey", "MinKey/MaxKey"]
+        },
+        {
+            "t": "This MongoDB data type allows storing JavaScript code directly within a document.",
+            "module": 6,
+            "type": "id",
+            "a": "Code",
+            "alt": ["code", "JavaScript code"]
+        },
+        {
+            "t": "This MongoDB data type allows storing pattern-matching expressions within a document, useful for search and validation.",
+            "module": 6,
+            "type": "id",
+            "a": "Regular expression",
+            "alt": ["regular expression", "regex", "Regex", "Regular Expression"]
+        },
+        {
+            "t": "MongoDB 4.4 or higher requires this architecture type — it does not support 32-bit systems.",
+            "module": 6,
+            "type": "id",
+            "a": "64-bit",
+            "alt": ["64 bit", "64-bit only", "x64"]
+        },
+        {
+            "t": "In the MongoDB Community Server download discussed in class, this specific version number was selected for installation.",
+            "module": 6,
+            "type": "id",
+            "a": "7.0.4",
+            "alt": ["version 7.0.4"]
+        },
+        {
+            "t": "MongoDB supports many programming languages including Node.js, C, C++, C#, Java, Perl, PHP, Ruby, and this popular language known for data science and machine learning.",
+            "module": 6,
+            "type": "id",
+            "a": "Python",
+            "alt": ["python"]
+        },
+        {
+            "t": "This Express.js feature allows you to define error-handling middleware to catch and respond to errors gracefully.",
+            "module": 6,
+            "type": "id",
+            "a": "Error Handling",
+            "alt": ["error handling", "Error handling"]
+        },
+        {
+            "t": "Express.js is described as highly _____ because it can be extended through custom or third-party middleware.",
+            "module": 6,
+            "type": "id",
+            "a": "Extensible",
+            "alt": ["extensible", "extensibility", "Extensibility"]
+        },
+        {
+            "t": "Express.js achieves high performance because it is built on Node.js's asynchronous, _____ architecture, allowing it to handle multiple simultaneous connections.",
+            "module": 6,
+            "type": "id",
+            "a": "non-blocking",
+            "alt": ["non blocking", "Non-blocking"]
+        },
+        {
+            "t": "This EJS feature means it combines HTML and JavaScript in a way that is easy to learn and use.",
+            "module": 6,
+            "type": "id",
+            "a": "Simple Syntax",
+            "alt": ["simple syntax"]
+        },
+        {
+            "t": "This EJS feature allows it to generate HTML and JavaScript content dynamically within HTML tags.",
+            "module": 6,
+            "type": "id",
+            "a": "Dynamic Content",
+            "alt": ["dynamic content"]
+        }
+    ]
+}

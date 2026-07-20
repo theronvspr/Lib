@@ -1,0 +1,601 @@
+{
+    "title": "Module 6 & 7 Internet Languages and Tools",
+    "subtitle": "Test your knowledge on Server-Side Scripting, Database Connectivity, CRUD, Sessions & Cookies, Dynamic Web Applications, and Web Security.",
+    "questions": [
+        {
+            "t": "In the client-server model, this is the user's device or application that sends requests and displays results.",
+            "module": 6,
+            "type": "id",
+            "a": "Client",
+            "alt": ["client"]
+        },
+        {
+            "t": "In the client-server model, this is a system that receives requests, processes them, and sends back the required data.",
+            "module": 6,
+            "type": "id",
+            "a": "Server",
+            "alt": ["server"]
+        },
+        {
+            "t": "Communication between the client and server happens over a network, usually through these two protocols.",
+            "module": 6,
+            "type": "id",
+            "a": "HTTP/HTTPS",
+            "alt": ["HTTP and HTTPS", "http/https", "HTTP / HTTPS"]
+        },
+        {
+            "t": "This type of programming runs on the server and handles request processing, data management, and core application logic.",
+            "module": 6,
+            "type": "id",
+            "a": "Server-side programming",
+            "alt": ["server-side programming", "server side programming", "server-side"]
+        },
+        {
+            "t": "This type of programming runs in the user's browser and is responsible for rendering the interface and handling interactions.",
+            "module": 6,
+            "type": "id",
+            "a": "Client-side programming",
+            "alt": ["client-side programming", "client side programming", "client-side"]
+        },
+        {
+            "t": "Server-side programming languages include JavaScript, Python, Java, and this popular server-side language whose full name is Hypertext Preprocessor.",
+            "module": 6,
+            "type": "id",
+            "a": "PHP",
+            "alt": ["php", "Hypertext Preprocessor"]
+        },
+        {
+            "t": "Client-side programming uses HTML, CSS, and JavaScript, along with frameworks like React, Angular, and this framework.",
+            "module": 6,
+            "type": "id",
+            "a": "Vue",
+            "alt": ["vue", "Vue.js", "VueJS"]
+        },
+        {
+            "t": "PHP stands for this.",
+            "module": 6,
+            "type": "id",
+            "a": "Hypertext Preprocessor",
+            "alt": ["hypertext preprocessor"]
+        },
+        {
+            "t": "PHP is a server-side language first released in November 1997, created by this person.",
+            "module": 6,
+            "type": "id",
+            "a": "Rasmus Lerdorf",
+            "alt": ["rasmus lerdorf"]
+        },
+        {
+            "t": "PHP supports small to medium size web solutions and can be embedded into this markup language.",
+            "module": 6,
+            "type": "id",
+            "a": "HTML",
+            "alt": ["html"]
+        },
+        {
+            "t": "This web application framework was first released in January 2002 by Microsoft and supports large to medium size enterprise applications.",
+            "module": 6,
+            "type": "id",
+            "a": "ASP.NET",
+            "alt": ["asp.net", "ASP.Net"]
+        },
+        {
+            "t": "ASP.NET is suitable for enterprise level websites, enterprise CRMs, console applications, and this type of enterprise application abbreviated as ERP.",
+            "module": 6,
+            "type": "id",
+            "a": "ERP apps",
+            "alt": ["ERP", "ERP applications", "Enterprise Resource Planning"]
+        },
+        {
+            "t": "PHP is suitable for Independent Software Vendors (ISVs), startups, billing/invoicing websites, and small or medium _____ websites.",
+            "module": 6,
+            "type": "id",
+            "a": "business",
+            "alt": ["business websites", "small or medium business"]
+        },
+        {
+            "t": "Database connectivity serves as the bridge between applications and databases, enabling software to communicate with this type of system (abbreviated DBMS).",
+            "module": 6,
+            "type": "id",
+            "a": "Database Management System",
+            "alt": ["database management system", "DBMS", "dbms"]
+        },
+        {
+            "t": "This standardized API lets applications interact with various DBMS using a common set of functions, bridging an application and a database. Its full name is Open Database Connectivity.",
+            "module": 6,
+            "type": "id",
+            "a": "ODBC",
+            "alt": ["odbc", "Open Database Connectivity"]
+        },
+        {
+            "t": "This API enables Java applications to connect to databases and execute SQL queries, and is a core component of the Java platform.",
+            "module": 6,
+            "type": "id",
+            "a": "JDBC",
+            "alt": ["jdbc", "Java Database Connectivity"]
+        },
+        {
+            "t": "This indirect database connection method uses APIs to facilitate communication between applications and databases without direct connections, offering flexibility and scalability.",
+            "module": 6,
+            "type": "id",
+            "a": "API-Based Connectivity",
+            "alt": ["API-based connectivity", "api-based connectivity", "API based connectivity"]
+        },
+        {
+            "t": "These indirect connection solutions act as intermediaries, managing communication and data exchange between applications and databases, offering load balancing and transaction management.",
+            "module": 6,
+            "type": "id",
+            "a": "Middleware Solutions",
+            "alt": ["middleware solutions", "Middleware", "middleware"]
+        },
+        {
+            "t": "This technique enhances database efficiency by reusing existing connections instead of creating, using, and closing them repeatedly.",
+            "module": 6,
+            "type": "id",
+            "a": "Connection Pooling",
+            "alt": ["connection pooling"]
+        },
+        {
+            "t": "These databases use structured query language for managing relational data, where embedded queries can be integrated into application code.",
+            "module": 6,
+            "type": "id",
+            "a": "SQL databases",
+            "alt": ["SQL", "sql databases"]
+        },
+        {
+            "t": "These databases offer flexibility for unstructured data using document, key-value, and graph models, catering to scalability and high performance.",
+            "module": 6,
+            "type": "id",
+            "a": "NoSQL databases",
+            "alt": ["NoSQL", "noSQL databases", "nosql"]
+        },
+        {
+            "t": "These APIs use HTTP protocols for lightweight, efficient access to web services.",
+            "module": 6,
+            "type": "id",
+            "a": "RESTful APIs",
+            "alt": ["RESTful", "REST APIs", "REST", "restful APIs"]
+        },
+        {
+            "t": "These APIs rely on XML-based messaging with robust security and are suited to enterprise applications.",
+            "module": 6,
+            "type": "id",
+            "a": "SOAP APIs",
+            "alt": ["SOAP", "soap APIs"]
+        },
+        {
+            "t": "This security challenge in database connectivity refers to the process of transforming readable data into an unreadable format to block unauthorized access.",
+            "module": 6,
+            "type": "id",
+            "a": "Data Encryption",
+            "alt": ["data encryption", "encryption"]
+        },
+        {
+            "t": "This transport layer security protocol (often paired as SSL/TLS) protects data in transit between client and server.",
+            "module": 6,
+            "type": "id",
+            "a": "SSL/TLS",
+            "alt": ["ssl/tls", "SSL / TLS", "TLS", "SSL"]
+        },
+        {
+            "t": "This security process verifies a user's identity, while its counterpart determines what the user is allowed to access.",
+            "module": 6,
+            "type": "id",
+            "a": "Authentication",
+            "alt": ["authentication"]
+        },
+        {
+            "t": "This security process determines a user's access level after their identity has been verified, limiting users to data relevant to their role.",
+            "module": 6,
+            "type": "id",
+            "a": "Authorization",
+            "alt": ["authorization"]
+        },
+        {
+            "t": "This security measure adds extra security layers beyond just passwords to verify identity, abbreviated as MFA.",
+            "module": 6,
+            "type": "id",
+            "a": "Multi-factor authentication",
+            "alt": ["multi-factor authentication", "MFA", "mfa"]
+        },
+        {
+            "t": "This performance issue in database connectivity refers to the delay in data transmission; high values slow response times.",
+            "module": 6,
+            "type": "id",
+            "a": "Latency",
+            "alt": ["latency"]
+        },
+        {
+            "t": "This performance issue in database connectivity refers to the data capacity of a connection; insufficient amounts cause bottlenecks.",
+            "module": 6,
+            "type": "id",
+            "a": "Bandwidth",
+            "alt": ["bandwidth"]
+        },
+        {
+            "t": "This scaling approach upgrades hardware to handle increased load, while its counterpart distributes data across servers.",
+            "module": 6,
+            "type": "id",
+            "a": "Vertical scaling",
+            "alt": ["vertical scaling", "Vertical Scaling"]
+        },
+        {
+            "t": "This scaling approach distributes data across multiple servers to handle increased load, as opposed to upgrading existing hardware.",
+            "module": 6,
+            "type": "id",
+            "a": "Horizontal scaling",
+            "alt": ["horizontal scaling", "Horizontal Scaling"]
+        },
+        {
+            "t": "This best practice in database connectivity involves examining systems and processes to identify vulnerabilities and keep security protocols current.",
+            "module": 6,
+            "type": "id",
+            "a": "Regular Security Audits",
+            "alt": ["regular security audits", "security audits"]
+        },
+        {
+            "t": "This best practice in database connectivity involves well-designed queries that use indexes and avoid unnecessary retrieval to reduce server load.",
+            "module": 6,
+            "type": "id",
+            "a": "Efficient Query Design",
+            "alt": ["efficient query design"]
+        },
+        {
+            "t": "This best practice distributes workloads across multiple servers to prevent overload, improve response times, and support scalability.",
+            "module": 6,
+            "type": "id",
+            "a": "Load Balancing",
+            "alt": ["load balancing", "Load balancing"]
+        },
+        {
+            "t": "CRUD stands for these four basic database operations: Create, Read, Update, and _____.",
+            "module": 6,
+            "type": "id",
+            "a": "Delete",
+            "alt": ["delete"]
+        },
+        {
+            "t": "This CRUD operation adds new records or data entries into a database and is the initial step in data management.",
+            "module": 6,
+            "type": "id",
+            "a": "Create",
+            "alt": ["create"]
+        },
+        {
+            "t": "This CRUD operation retrieves data from a database, either by querying based on criteria or displaying all data.",
+            "module": 6,
+            "type": "id",
+            "a": "Read",
+            "alt": ["read"]
+        },
+        {
+            "t": "This CRUD operation modifies existing data to keep it accurate and relevant.",
+            "module": 6,
+            "type": "id",
+            "a": "Update",
+            "alt": ["update"]
+        },
+        {
+            "t": "HTTP is described as this, meaning all requests sent are independent — which is why sessions and cookies are needed to store user information.",
+            "module": 6,
+            "type": "id",
+            "a": "stateless",
+            "alt": ["Stateless"]
+        },
+        {
+            "t": "These let web applications store information in the user's browser, which is retrieved every time the user requests a page from the same web server.",
+            "module": 6,
+            "type": "id",
+            "a": "Cookies",
+            "alt": ["cookies"]
+        },
+        {
+            "t": "This is a way of storing information about a user on the server-side, used in subsequent requests, and represents a sequence of HTTP request/response transactions associated with the same user.",
+            "module": 6,
+            "type": "id",
+            "a": "Session",
+            "alt": ["session", "Sessions", "sessions"]
+        },
+        {
+            "t": "Sessions let you establish variables such as access rights and _____ settings that apply throughout the user's interaction with the app.",
+            "module": 6,
+            "type": "id",
+            "a": "localization",
+            "alt": ["Localization", "localization settings"]
+        },
+        {
+            "t": "This type of web application displays different content and enables user interaction by changing data in response to user actions or inputs, without reloading the entire page.",
+            "module": 6,
+            "type": "id",
+            "a": "Dynamic web application",
+            "alt": ["dynamic web application", "Dynamic Web Application", "dynamic"]
+        },
+        {
+            "t": "Compared to dynamic web applications, this type of web application has content that remains the same regardless of user interaction, requires simpler HTML and CSS coding, and has lower server load.",
+            "module": 6,
+            "type": "id",
+            "a": "Static web application",
+            "alt": ["static web application", "Static Web Application", "static"]
+        },
+        {
+            "t": "In dynamic web applications, this e-commerce sector example uses a database driver to manage inventory and user data, with real-time updates to product availability and prices.",
+            "module": 6,
+            "type": "id",
+            "a": "E-Commerce",
+            "alt": ["e-commerce", "ecommerce", "E-commerce"]
+        },
+        {
+            "t": "In this dynamic web application sector, patient management systems dynamically update and display patient records and test results.",
+            "module": 6,
+            "type": "id",
+            "a": "Healthcare",
+            "alt": ["healthcare"]
+        },
+        {
+            "t": "In this dynamic web application sector, platforms adapt content to different learning styles based on student interactions and performance using algorithms.",
+            "module": 6,
+            "type": "id",
+            "a": "Education",
+            "alt": ["education"]
+        },
+        {
+            "t": "Web security means employing the latest security protocols and implementing controls to ensure the right person with the right _____ can access the right information at the right time.",
+            "module": 7,
+            "type": "id",
+            "a": "privileges",
+            "alt": ["Privileges", "permissions"]
+        },
+        {
+            "t": "This key trend in web security uses technologies that analyze large volumes of data to identify unusual patterns and predict potential attacks before they occur, enabling real-time threat detection and automated response.",
+            "module": 7,
+            "type": "id",
+            "a": "AI and Machine Learning in Cybersecurity",
+            "alt": ["AI and Machine Learning", "AI and ML", "artificial intelligence and machine learning"]
+        },
+        {
+            "t": "This security model operates on the principle of 'never trust, always verify,' requiring every user, device, and application to be authenticated and authorized before access is granted.",
+            "module": 7,
+            "type": "id",
+            "a": "Zero Trust Security Model",
+            "alt": ["zero trust", "Zero Trust", "zero trust security model"]
+        },
+        {
+            "t": "This practice, also known as DevSecOps, integrates security into every stage of the software development lifecycle, identifying and fixing vulnerabilities faster before deployment.",
+            "module": 7,
+            "type": "id",
+            "a": "Secure DevOps",
+            "alt": ["DevSecOps", "devsecops", "Secure DevOps (DevSecOps)"]
+        },
+        {
+            "t": "This security concern addresses the rapid growth of connected devices, preventing them from becoming entry points for cyberattacks and protecting the overall network infrastructure.",
+            "module": 7,
+            "type": "id",
+            "a": "IoT Security",
+            "alt": ["iot security", "IoT security", "Internet of Things security"]
+        },
+        {
+            "t": "This web application vulnerability targets the server using malicious code to get it to divulge information, especially problematic when the server stores private data like credit card numbers and passwords.",
+            "module": 7,
+            "type": "id",
+            "a": "SQL Injection",
+            "alt": ["sql injection", "SQL injection"]
+        },
+        {
+            "t": "This web application vulnerability (abbreviated XSS) can damage a company's reputation by placing user information at risk, where a malicious script is injected into a site and activates on each visitor's session.",
+            "module": 7,
+            "type": "id",
+            "a": "Cross-Site Scripting",
+            "alt": ["cross-site scripting", "XSS", "Cross Site Scripting"]
+        },
+        {
+            "t": "This web application vulnerability (abbreviated CSRF) forces a victim to perform an unintended action on a web app they're already logged into, because the app trusts the victim's browser.",
+            "module": 7,
+            "type": "id",
+            "a": "Cross-Site Request Forgery",
+            "alt": ["cross-site request forgery", "CSRF", "Cross Site Request Forgery"]
+        },
+        {
+            "t": "In a CSRF attack flow, the bank issues this to the victim after login, which the hacker later exploits through a forged request.",
+            "module": 7,
+            "type": "id",
+            "a": "validation token",
+            "alt": ["Validation token", "token"]
+        },
+        {
+            "t": "In web security, this process confirms the user's identity — answering the question 'Who are you?'",
+            "module": 7,
+            "type": "id",
+            "a": "Authentication",
+            "alt": ["authentication"]
+        },
+        {
+            "t": "In web security, this process determines what a verified user is allowed to access or do — answering the question 'What permissions do you have?'",
+            "module": 7,
+            "type": "id",
+            "a": "Authorization",
+            "alt": ["authorization"]
+        },
+        {
+            "t": "This protocol is essential for securing web apps by ensuring communication between client and server is encrypted, preventing attackers from intercepting and reading sensitive information.",
+            "module": 7,
+            "type": "id",
+            "a": "SSL / TLS",
+            "alt": ["SSL/TLS", "ssl/tls", "SSL", "TLS"]
+        },
+        {
+            "t": "Weak authentication such as easy-to-guess or reused passwords leaves apps vulnerable to these attacks, where attackers use automated tools to guess usernames and passwords.",
+            "module": 7,
+            "type": "id",
+            "a": "brute-force attacks",
+            "alt": ["brute force attacks", "brute-force", "brute force"]
+        },
+        {
+            "t": "This essential security tool (abbreviated WAF) helps protect web apps from attacks including SQL injection and XSS by filtering out unsafe requests before they reach the server.",
+            "module": 7,
+            "type": "id",
+            "a": "Web Application Firewall",
+            "alt": ["web application firewall", "WAF", "waf"]
+        },
+        {
+            "t": "Vendors release these fixes to address software vulnerabilities, making it important to keep software updated to prevent attackers from exploiting known weaknesses.",
+            "module": 7,
+            "type": "id",
+            "a": "patches and updates",
+            "alt": ["patches", "updates", "software patches", "security patches"]
+        },
+        {
+            "t": "This secure coding practice involves checking user input to ensure it's valid and safe, preventing vulnerabilities like SQL injection, XSS, and command injection.",
+            "module": 7,
+            "type": "id",
+            "a": "Input Validation",
+            "alt": ["input validation", "validate input"]
+        },
+        {
+            "t": "This security principle states that users, processes, and systems should have only the minimum access necessary to perform their functions.",
+            "module": 7,
+            "type": "id",
+            "a": "Principle of Least Privilege",
+            "alt": ["principle of least privilege", "least privilege"]
+        },
+        {
+            "t": "This attack on user session management involves an attacker stealing a user's session ID, taking control of the session to access sensitive info or perform unauthorized actions.",
+            "module": 7,
+            "type": "id",
+            "a": "Session hijacking",
+            "alt": ["session hijacking"]
+        },
+        {
+            "t": "This attack on user session management involves an attacker setting a user's session ID to a predetermined value, then taking control once the user logs in.",
+            "module": 7,
+            "type": "id",
+            "a": "Session fixation",
+            "alt": ["session fixation"]
+        },
+        {
+            "t": "This secure coding practice is essential for detecting and resolving security issues, as errors and exceptions can reveal valuable information to attackers about vulnerabilities.",
+            "module": 7,
+            "type": "id",
+            "a": "Error Handling and Logging",
+            "alt": ["error handling and logging", "Error handling and logging", "error handling"]
+        },
+        {
+            "t": "These can pose a significant security risk if not handled properly, as attackers may upload malicious content that compromises the entire application.",
+            "module": 7,
+            "type": "id",
+            "a": "File Uploads",
+            "alt": ["file uploads", "File uploads"]
+        },
+        {
+            "t": "This term refers to the strategic and procedural steps taken to safeguard the privacy, availability, and integrity of sensitive data, often used interchangeably with 'data security.'",
+            "module": 7,
+            "type": "id",
+            "a": "Data protection",
+            "alt": ["data protection", "Data Protection"]
+        },
+        {
+            "t": "This data protection principle ensures users can access and use required data even if it's lost or damaged.",
+            "module": 7,
+            "type": "id",
+            "a": "Data availability",
+            "alt": ["data availability", "Data Availability"]
+        },
+        {
+            "t": "This data protection principle automates the transmission of critical data to offline and online storage.",
+            "module": 7,
+            "type": "id",
+            "a": "Data lifecycle management",
+            "alt": ["data lifecycle management", "Data Lifecycle Management"]
+        },
+        {
+            "t": "This data protection principle involves the valuation, cataloging, and protection of information assets from facility outages, application errors, machine failure, and malware attacks.",
+            "module": 7,
+            "type": "id",
+            "a": "Information lifecycle management",
+            "alt": ["information lifecycle management", "Information Lifecycle Management"]
+        },
+        {
+            "t": "This is a guideline for how data should be collected or handled based on sensitivity and importance, typically applying to PHI and PII.",
+            "module": 7,
+            "type": "id",
+            "a": "Data Privacy",
+            "alt": ["data privacy"]
+        },
+        {
+            "t": "PHI stands for this type of information that data privacy guidelines typically apply to.",
+            "module": 7,
+            "type": "id",
+            "a": "Personal Health Information",
+            "alt": ["personal health information"]
+        },
+        {
+            "t": "PII stands for this type of information that includes financial info, medical records, SSNs, names, birthdates, and contact info.",
+            "module": 7,
+            "type": "id",
+            "a": "Personally Identifiable Information",
+            "alt": ["personally identifiable information"]
+        },
+        {
+            "t": "This is the procedure of converting data into a secret code that hides its real meaning.",
+            "module": 7,
+            "type": "id",
+            "a": "Encryption",
+            "alt": ["encryption"]
+        },
+        {
+            "t": "This is the field of encrypting and decrypting information.",
+            "module": 7,
+            "type": "id",
+            "a": "Cryptography",
+            "alt": ["cryptography"]
+        },
+        {
+            "t": "This encryption method uses only one secret key to encode and decipher information and is the oldest and most well-known method.",
+            "module": 7,
+            "type": "id",
+            "a": "Symmetric Encryption",
+            "alt": ["symmetric encryption", "symmetric"]
+        },
+        {
+            "t": "This more recent encryption method uses two separate but related keys — one private and one public.",
+            "module": 7,
+            "type": "id",
+            "a": "Asymmetric Encryption",
+            "alt": ["asymmetric encryption", "Public-Key Cryptography", "public-key cryptography", "asymmetric"]
+        },
+        {
+            "t": "This deprecated symmetric key encryption technique requires both sender and receiver to have access to the same private key, and has been superseded by AES.",
+            "module": 7,
+            "type": "id",
+            "a": "DES",
+            "alt": ["Data Encryption Standard", "des", "data encryption standard"]
+        },
+        {
+            "t": "This encryption method requires three distinct keys and three runs of the DES algorithm, and was a temporary solution once DES was seen as too weak against brute-force attacks.",
+            "module": 7,
+            "type": "id",
+            "a": "Triple DES",
+            "alt": ["3DES", "triple DES", "Triple DES (3DES)"]
+        },
+        {
+            "t": "This cryptosystem, named after its three creators, enables public-key encryption and is commonly used by browsers and VPNs to connect to websites.",
+            "module": 7,
+            "type": "id",
+            "a": "RSA",
+            "alt": ["rsa", "Rivest-Shamir-Adleman"]
+        },
+        {
+            "t": "This is the standard and most secure type of encryption, using symmetric key encryption on fixed 128-bit blocks of data with key sizes of 128, 192, or 256 bits.",
+            "module": 7,
+            "type": "id",
+            "a": "AES",
+            "alt": ["Advanced Encryption Standard", "aes", "advanced encryption standard"]
+        },
+        {
+            "t": "AES uses key sizes of 128, 192, or 256 bits, corresponding to this many rounds of encryption respectively: 10, 12, or _____.",
+            "module": 7,
+            "type": "id",
+            "a": "14",
+            "alt": ["14 rounds"]
+        }
+    ]
+}

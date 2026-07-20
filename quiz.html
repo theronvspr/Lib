@@ -69,6 +69,7 @@
             selModules: new Set([1, 2, 4]),
             shuffle: true,
             infiniteMode: false,
+            lmsMode: false,
             quiz: [],
             originalPool: [],
             originalTotal: 0,
@@ -79,6 +80,11 @@
             results: [],
             showReview: false,
             justSubmitted: false,
+            // LMS mode state
+            lmsAnswers: {},
+            lmsReviewOpen: false,
+            lmsMatchingStates: {},
+            lmsNavOpen: false,
         };
 
         // =============================================================================
@@ -247,6 +253,11 @@
             state.shuffleAtStart = state.shuffle;
             state.quiz = pool; state.idx = 0; state.answered = false; state.skipped = false;
             state.userAnswer = ''; state.results = []; state.showReview = false; state.justSubmitted = false;
+            // LMS mode init
+            state.lmsAnswers = {};
+            state.lmsReviewOpen = false;
+            state.lmsMatchingStates = {};
+            state.lmsNavOpen = false;
             state.screen = 'quiz'; render();
         }
 
@@ -287,7 +298,14 @@
             const scrollY = document.scrollingElement ? document.scrollingElement.scrollTop : 0;
             const focusId = document.activeElement ? document.activeElement.id : null;
             if (state.screen === 'setup') { app.innerHTML = renderSetup(); bindSetup(); }
-            else if (state.screen === 'quiz') { app.innerHTML = renderQuiz(); bindQuiz(); }
+            else if (state.screen === 'quiz') {
+                if (state.lmsMode) {
+                    if (state.lmsReviewOpen) { app.innerHTML = renderLmsReview(); bindLmsReview(); }
+                    else { app.innerHTML = renderLmsQuiz(); bindLmsQuiz(); }
+                } else {
+                    app.innerHTML = renderQuiz(); bindQuiz();
+                }
+            }
             else if (state.screen === 'results') { app.innerHTML = renderResults(); bindResults(); }
             if (document.scrollingElement) document.scrollingElement.scrollTop = scrollY;
             if (focusId) { const el = document.getElementById(focusId); if (el && el.focus) el.focus(); }
@@ -378,8 +396,10 @@
   <div class="shuffle-row">
     <input type="checkbox" id="shuffle-chk" ${state.shuffle ? 'checked' : ''}>
     <label for="shuffle-chk" class="shuffle-label">Shuffle questions</label>
-    <input type="checkbox" id="infinite-chk" style="margin-left:12px" ${state.infiniteMode ? 'checked' : ''}>
-    <label for="infinite-chk" class="shuffle-label">Infinite mode (requeue wrong answers)</label>
+    <input type="checkbox" id="infinite-chk" style="margin-left:12px" ${state.infiniteMode ? 'checked' : ''} ${state.lmsMode ? 'disabled' : ''}>
+    <label for="infinite-chk" class="shuffle-label" style="${state.lmsMode ? 'opacity:0.4' : ''}">Infinite mode</label>
+    <input type="checkbox" id="lms-chk" style="margin-left:12px" ${state.lmsMode ? 'checked' : ''} ${state.infiniteMode ? 'disabled' : ''}>
+    <label for="lms-chk" class="shuffle-label" style="${state.infiniteMode ? 'opacity:0.4' : ''}">Test mode</label>
   </div>
   <button class="start-btn" id="start-btn" ${totalQ === 0 ? 'disabled' : ''}>Start${totalQ > 0 ? ' (' + totalQ + ' questions)' : ''}</button>`;
         }
@@ -412,7 +432,8 @@
             const selNone = document.getElementById('sel-none');
             if (selNone) selNone.addEventListener('click', () => { state.selTypes = new Set(); render(); });
             document.getElementById('shuffle-chk').addEventListener('change', e => { state.shuffle = e.target.checked; });
-            document.getElementById('infinite-chk').addEventListener('change', e => { state.infiniteMode = e.target.checked; });
+            document.getElementById('infinite-chk').addEventListener('change', e => { state.infiniteMode = e.target.checked; if (e.target.checked) { state.lmsMode = false; } render(); });
+            document.getElementById('lms-chk').addEventListener('change', e => { state.lmsMode = e.target.checked; if (e.target.checked) { state.infiniteMode = false; } render(); });
             const sb = document.getElementById('start-btn');
             if (sb) sb.addEventListener('click', () => startQuiz());
         }
@@ -434,7 +455,7 @@
                 const noAnswerPct = state.infiniteMode
                     ? (state.quiz.length > 1 ? Math.round((state.idx / state.quiz.length) * 100) : 0)
                     : Math.round((state.results.length / (state.infiniteMode ? state.quiz.length : state.originalTotal)) * 100);
-                return `<div class="prog-bar-track"><div class="prog-bar-fill" style="width:${noAnswerPct}%"></div></div>
+                return `<div class="prog-bar-track"><div class="prog-bar-fill" style="transform:scaleX(${noAnswerPct / 100})"></div></div>
   <div class="q-header">
     <span class="q-badge">${typeBadge(q.type)}</span>
     <span class="q-score">Score: ${score}/${state.results.filter(r => !r.noAnswer).length}${state.infiniteMode ? ' · <span class="q-remaining-badge">' + (state.quiz.length - state.idx - 1) + ' remaining</span>' : ''}</span>
@@ -710,7 +731,7 @@
             const isLast = state.idx >= state.quiz.length - 1 && done;
             const nextLabel = isLast ? 'See results' : 'Next';
 
-            return `<div class="prog-bar-track"><div class="prog-bar-fill" style="width:${pct}%"></div></div>
+            return `<div class="prog-bar-track"><div class="prog-bar-fill" style="transform:scaleX(${pct / 100})"></div></div>
   <div class="q-header">
     <span class="q-badge">${typeBadge(q.type)}</span>
     <span class="q-score">Score: ${score}/${state.results.filter(r => !r.noAnswer).length}${state.infiniteMode ? ' · <span class="q-remaining-badge">' + (state.quiz.length - state.idx - 1) + ' remaining</span>' : ''}</span>
@@ -881,6 +902,349 @@
             });
         }
 
+        // ── LMS Quiz Mode ──
+
+        function lmsHasAnswer(idx) {
+            const a = state.lmsAnswers[idx];
+            if (a === undefined || a === null) return false;
+            if (typeof a === 'string') return a.trim().length > 0;
+            if (Array.isArray(a)) return a.some(v => v && v.trim());
+            if (typeof a === 'object') return Object.keys(a).length > 0;
+            return false;
+        }
+
+        function renderLmsAnswerBlock(q, idx) {
+            const saved = state.lmsAnswers[idx];
+
+            if (q.type === 'tf') {
+                const sel = saved || '';
+                return `<div class="tf-row">
+                    <button class="tf-btn ${sel === 'True' ? 'got-it' : ''}" id="lms-tf-true">True</button>
+                    <button class="tf-btn ${sel === 'False' ? 'got-it' : ''}" id="lms-tf-false">False</button>
+                </div>`;
+            }
+
+            if (q.type === 'mc') {
+                const sel = saved || '';
+                return `<div class="mc-list">${q.choices.map(c =>
+                    `<button class="mc-btn ${c === sel ? 'got-it' : ''}" data-choice="${escapeAttr(c)}">${escapeHtml(c)}</button>`
+                ).join('')}</div>`;
+            }
+
+            if (q.type === 'enum') {
+                const vals = saved || [];
+                const orderText = q.ordered ? "Strict Order Required" : "Any Order Accepted";
+                const orderClass = q.ordered ? "ordered" : "unordered";
+                return `
+                    <div class="enum-info-bar ${orderClass}">${orderText}</div>
+                    <div class="enum-list">
+                        ${q.a.map((_, i) => `
+                            <div class="enum-row">
+                                <span class="enum-num">${i + 1}</span>
+                                <input class="enum-input" id="lms-enum-inp-${i}" type="text" placeholder="Type answer ${i + 1}..." value="${escapeAttr(vals[i] || '')}">
+                            </div>
+                        `).join('')}
+                    </div>`;
+            }
+
+            if (q.type === 'match') {
+                if (!state.lmsMatchingStates[idx]) {
+                    const left = Object.keys(q.a);
+                    const right = shuffleArr(Object.values(q.a));
+                    state.lmsMatchingStates[idx] = { left, right, pairs: {}, activeLeft: left[0] };
+                }
+                // Restore pairs from lmsAnswers if present
+                const ms = state.lmsMatchingStates[idx];
+                if (saved && typeof saved === 'object' && Object.keys(saved).length > 0) {
+                    ms.pairs = { ...saved };
+                }
+
+                const leftCol = ms.left.map(lk => {
+                    const matchedVal = ms.pairs[lk];
+                    const isActive = ms.activeLeft === lk;
+                    let cls = 'match-left-item';
+                    if (isActive) cls += ' active';
+                    if (matchedVal) cls += ' matched';
+                    return `
+                    <div class="${cls}" data-key="${escapeAttr(lk)}">
+                        <div class="match-left-prompt">${escapeHtml(lk)}</div>
+                        <div class="match-left-slot">
+                            ${matchedVal
+                                ? `<span class="match-docked-val">${escapeHtml(matchedVal)} <button class="match-clear-btn" data-key="${escapeAttr(lk)}" aria-label="Clear pairing">×</button></span>`
+                                : `<span class="match-slot-placeholder">Select option...</span>`}
+                        </div>
+                    </div>`;
+                }).join('');
+
+                const rightCol = ms.right.map(rv => {
+                    const isUsed = Object.values(ms.pairs).includes(rv);
+                    let cls = 'match-right-item';
+                    if (isUsed) cls += ' used';
+                    return `<button class="${cls}" data-val="${escapeAttr(rv)}" ${isUsed ? 'disabled' : ''}>${escapeHtml(rv)}</button>`;
+                }).join('');
+
+                return `
+                <div class="match-instructions">Tap a left prompt to select, then tap a right option to pair them.</div>
+                <div class="match-board">
+                    <div class="match-col-left">
+                        <div class="match-col-title">Prompts</div>
+                        ${leftCol}
+                    </div>
+                    <div class="match-col-right">
+                        <div class="match-col-title">Options</div>
+                        ${rightCol}
+                    </div>
+                </div>`;
+            }
+
+            // Default: identification / fill-in
+            return `<div class="id-row">
+                <input class="id-input" id="lms-id-inp" type="text" placeholder="Type your answer..." value="${escapeAttr(saved || '')}">
+            </div>`;
+        }
+
+        function renderLmsQuiz() {
+            const q = state.quiz[state.idx];
+            const total = state.quiz.length;
+            const answeredCount = state.quiz.filter((_, i) => lmsHasAnswer(i)).length;
+            const pct = Math.round((answeredCount / total) * 100);
+
+            const navItems = state.quiz.map((_, i) => {
+                const isActive = i === state.idx;
+                const isAnswered = lmsHasAnswer(i);
+                let cls = 'lms-nav-item';
+                if (isActive) cls += ' active';
+                else if (isAnswered) cls += ' answered';
+                return `<button class="${cls}" data-nav="${i}">${i + 1}</button>`;
+            }).join('');
+
+            const answerBlock = renderLmsAnswerBlock(q, state.idx);
+
+            return `<div class="prog-bar-track"><div class="prog-bar-fill" style="transform:scaleX(${pct / 100})"></div></div>
+  <div class="q-header">
+    <span class="q-badge">${typeBadge(q.type)}</span>
+    <span class="q-score">Question ${state.idx + 1} of ${total}</span>
+  </div>
+  <div class="q-card">
+    <div class="q-num">Question ${state.idx + 1} of ${total}</div>
+    <div class="q-text">${escapeHtml(q.t)}</div>
+    ${answerBlock}
+  </div>
+  <div class="lms-controls">
+    <button class="lms-prev-btn" id="lms-prev" ${state.idx === 0 ? 'disabled' : ''}>← Prev</button>
+    <button class="lms-complete-btn" id="lms-complete">Review \u0026 Complete</button>
+    <button class="lms-next-btn" id="lms-next" ${state.idx >= total - 1 ? 'disabled' : ''}>Next →</button>
+  </div>
+  <div class="lms-nav-panel">
+    <button class="lms-nav-toggle" id="lms-nav-toggle">
+      <span>Questions · ${answeredCount}/${total} answered</span>
+      <span class="lms-nav-chevron ${state.lmsNavOpen ? 'open' : ''}">${state.lmsNavOpen ? '▼' : '▲'}</span>
+    </button>
+    <div class="lms-nav ${state.lmsNavOpen ? 'open' : ''}">${navItems}</div>
+  </div>`;
+        }
+
+        function lmsSaveCurrentAnswer() {
+            const q = state.quiz[state.idx];
+            const idx = state.idx;
+
+            if (q.type === 'tf') {
+                // Already saved on click
+            } else if (q.type === 'mc') {
+                // Already saved on click
+            } else if (q.type === 'enum') {
+                const vals = q.a.map((_, i) => {
+                    const inp = document.getElementById(`lms-enum-inp-${i}`);
+                    return inp ? inp.value.trim() : '';
+                });
+                if (vals.some(v => v)) state.lmsAnswers[idx] = vals;
+                else delete state.lmsAnswers[idx];
+            } else if (q.type === 'match') {
+                const ms = state.lmsMatchingStates[idx];
+                if (ms && Object.keys(ms.pairs).length > 0) {
+                    state.lmsAnswers[idx] = { ...ms.pairs };
+                }
+            } else {
+                // id type
+                const inp = document.getElementById('lms-id-inp');
+                if (inp) {
+                    const val = inp.value.trim();
+                    if (val) state.lmsAnswers[idx] = val;
+                    else delete state.lmsAnswers[idx];
+                }
+            }
+        }
+
+        function lmsNavigateTo(newIdx) {
+            lmsSaveCurrentAnswer();
+            state.idx = newIdx;
+            render();
+            if (document.scrollingElement) document.scrollingElement.scrollTop = 0;
+        }
+
+        function bindLmsQuiz() {
+            const q = state.quiz[state.idx];
+
+            // Nav panel toggle
+            const toggle = document.getElementById('lms-nav-toggle');
+            if (toggle) toggle.addEventListener('click', () => { state.lmsNavOpen = !state.lmsNavOpen; render(); });
+
+            // Nav bubbles
+            document.querySelectorAll('.lms-nav-item').forEach(btn => {
+                btn.addEventListener('click', () => lmsNavigateTo(parseInt(btn.dataset.nav)));
+            });
+
+            // Prev / Next
+            const prev = document.getElementById('lms-prev');
+            const next = document.getElementById('lms-next');
+            if (prev) prev.addEventListener('click', () => lmsNavigateTo(state.idx - 1));
+            if (next) next.addEventListener('click', () => lmsNavigateTo(state.idx + 1));
+
+            // Complete
+            const complete = document.getElementById('lms-complete');
+            if (complete) complete.addEventListener('click', () => {
+                lmsSaveCurrentAnswer();
+                state.lmsReviewOpen = true;
+                render();
+                if (document.scrollingElement) document.scrollingElement.scrollTop = 0;
+            });
+
+            // Answer-type specific bindings
+            if (q.type === 'tf') {
+                const trueBtn = document.getElementById('lms-tf-true');
+                const falseBtn = document.getElementById('lms-tf-false');
+                if (trueBtn) trueBtn.addEventListener('click', () => { state.lmsAnswers[state.idx] = 'True'; render(); });
+                if (falseBtn) falseBtn.addEventListener('click', () => { state.lmsAnswers[state.idx] = 'False'; render(); });
+            }
+
+            if (q.type === 'mc') {
+                document.querySelectorAll('.mc-btn').forEach(btn => {
+                    btn.addEventListener('click', () => { state.lmsAnswers[state.idx] = btn.dataset.choice; render(); });
+                });
+            }
+
+            if (q.type === 'match') {
+                const ms = state.lmsMatchingStates[state.idx];
+                if (ms) {
+                    document.querySelectorAll('.match-left-item').forEach(el => {
+                        el.addEventListener('click', e => {
+                            if (e.target.classList.contains('match-clear-btn')) return;
+                            ms.activeLeft = el.dataset.key;
+                            render();
+                        });
+                    });
+                    document.querySelectorAll('.match-clear-btn').forEach(btn => {
+                        btn.addEventListener('click', e => {
+                            e.stopPropagation();
+                            const key = btn.dataset.key;
+                            delete ms.pairs[key];
+                            ms.activeLeft = key;
+                            state.lmsAnswers[state.idx] = { ...ms.pairs };
+                            render();
+                        });
+                    });
+                    document.querySelectorAll('.match-right-item').forEach(btn => {
+                        btn.addEventListener('click', () => {
+                            if (!ms.activeLeft) return;
+                            ms.pairs[ms.activeLeft] = btn.dataset.val;
+                            const nextUnmatched = ms.left.find(lk => !ms.pairs[lk]);
+                            ms.activeLeft = nextUnmatched || null;
+                            state.lmsAnswers[state.idx] = { ...ms.pairs };
+                            render();
+                        });
+                    });
+                }
+            }
+
+            // Focus text inputs
+            if (q.type === 'id') {
+                const inp = document.getElementById('lms-id-inp');
+                if (inp) inp.focus();
+            }
+            if (q.type === 'enum') {
+                const firstInp = document.getElementById('lms-enum-inp-0');
+                if (firstInp && !state.lmsAnswers[state.idx]) firstInp.focus();
+            }
+        }
+
+        function lmsFormatAnswer(q, ans) {
+            if (!ans) return '<span class="blank-label">[Blank]</span>';
+            if (q.type === 'enum') {
+                return Array.isArray(ans) ? ans.map((a, i) => `${i + 1}. ${a ? escapeHtml(a) : '<em>[blank]</em>'}`).join(', ') : escapeHtml(ans);
+            }
+            if (q.type === 'match') {
+                return Object.entries(ans).map(([k, v]) => `${escapeHtml(k)} ➔ ${escapeHtml(v)}`).join('; ');
+            }
+            return escapeHtml(ans);
+        }
+
+        function renderLmsReview() {
+            const total = state.quiz.length;
+            const answeredCount = state.quiz.filter((_, i) => lmsHasAnswer(i)).length;
+            const blankCount = total - answeredCount;
+
+            const items = state.quiz.map((q, i) => {
+                const ans = state.lmsAnswers[i];
+                const hasAns = lmsHasAnswer(i);
+                return `<div class="lms-review-item ${hasAns ? 'filled' : 'blank'}">
+                    <div class="lms-review-num">Q${i + 1}</div>
+                    <div class="lms-review-body">
+                        <div class="lms-review-q">${escapeHtml(q.t)}</div>
+                        <div class="lms-review-answer">${lmsFormatAnswer(q, ans)}</div>
+                    </div>
+                    <button class="lms-review-goto" data-goto="${i}">Edit</button>
+                </div>`;
+            }).join('');
+
+            const warning = blankCount > 0
+                ? `<div class="lms-warning-bar">⚠ You have ${blankCount} unanswered question${blankCount > 1 ? 's' : ''}. You can still submit, but blank answers will be marked incorrect.</div>`
+                : '';
+
+            return `<div class="lms-review-header">Review your answers</div>
+  <div class="lms-review-sub">${answeredCount} of ${total} answered</div>
+  ${warning}
+  <div class="lms-submit-row">
+    <button class="lms-submit-btn" id="lms-submit">Submit quiz</button>
+    <button class="lms-back-btn" id="lms-back">← Back to questions</button>
+  </div>
+  <div class="lms-review-list">${items}</div>`;
+        }
+
+        function bindLmsReview() {
+            document.getElementById('lms-submit').addEventListener('click', () => completeLmsQuiz());
+            document.getElementById('lms-back').addEventListener('click', () => {
+                state.lmsReviewOpen = false;
+                render();
+            });
+            document.querySelectorAll('.lms-review-goto').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    state.lmsReviewOpen = false;
+                    state.idx = parseInt(btn.dataset.goto);
+                    render();
+                    if (document.scrollingElement) document.scrollingElement.scrollTop = 0;
+                });
+            });
+        }
+
+        function completeLmsQuiz() {
+            state.results = [];
+            state.quiz.forEach((q, i) => {
+                const ua = state.lmsAnswers[i];
+                if (!hasValidAnswer(q)) {
+                    state.results.push({ q, ua: ua || '', correct: false, skipped: false, noAnswer: true });
+                } else if (!lmsHasAnswer(i)) {
+                    state.results.push({ q, ua: '', correct: false, skipped: true });
+                } else {
+                    const correct = checkAnswer(q, ua);
+                    state.results.push({ q, ua, correct, skipped: false });
+                }
+            });
+            state.lmsReviewOpen = false;
+            state.screen = 'results';
+            render();
+            if (document.scrollingElement) document.scrollingElement.scrollTop = 0;
+        }
+
         // ── Results ──
 
         function renderAnswerSummary(q, ans) {
@@ -950,6 +1314,7 @@
                 state.originalTotal = pool.length;
                 state.idx = 0; state.answered = false; state.skipped = false;
                 state.userAnswer = ''; state.results = []; state.showReview = false; state.justSubmitted = false;
+                state.lmsAnswers = {}; state.lmsReviewOpen = false; state.lmsMatchingStates = {}; state.lmsNavOpen = false;
                 state.screen = 'quiz'; render();
             });
             document.getElementById('setup-btn').addEventListener('click', () => { state.screen = 'setup'; render(); });
@@ -964,11 +1329,13 @@
         document.addEventListener('keydown', e => {
             if (e.key !== 'Enter') return;
             if (document.activeElement && document.activeElement.id === 'id-inp') return;
+            if (document.activeElement && document.activeElement.id === 'lms-id-inp') return;
             if (document.activeElement && document.activeElement.classList.contains('enum-input')) return;
             if (state.screen === 'setup') {
                 const sb = document.getElementById('start-btn');
                 if (sb && !sb.disabled) sb.click();
             } else if (state.screen === 'quiz') {
+                if (state.lmsMode) return; // LMS mode uses its own navigation
                 const q = state.quiz[state.idx];
                 if (state.answered || state.skipped) {
                     if (state.justSubmitted) { state.justSubmitted = false; return; }

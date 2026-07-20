@@ -275,12 +275,12 @@ body {
     background: var(--color-background-success);
     color: var(--color-text-success);
     border-color: var(--color-border-success);
-    animation: footerBounce 2s infinite ease-in-out;
+    animation: footerPulse 2s infinite ease-in-out;
 }
 
-@keyframes footerBounce {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-2px); }
+@keyframes footerPulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
 }
 
 /* ==========================================================================
@@ -477,9 +477,11 @@ body {
 
 .prog-bar-fill {
     height: 3px;
+    width: 100%;
     border-radius: 2px;
     background: var(--color-text-primary);
-    transition: width 0.3s
+    transform-origin: left;
+    transition: transform 0.3s ease-out;
 }
 
 .q-header {
@@ -832,15 +834,18 @@ body {
 }
 
 .rev-item.c {
-    border-left: 2px solid var(--color-border-success)
+    border-color: var(--color-border-success);
+    background: var(--color-background-success);
 }
 
 .rev-item.w {
-    border-left: 2px solid var(--color-border-danger)
+    border-color: var(--color-border-danger);
+    background: var(--color-background-danger);
 }
 
 .rev-item.s {
-    border-left: 2px solid var(--color-border-warning)
+    border-color: var(--color-border-warning);
+    background: var(--color-background-warning);
 }
 
 .rev-q {
@@ -1008,21 +1013,18 @@ body {
     background: var(--color-background-success);
     border-color: var(--color-border-success);
     color: var(--color-text-success);
-    border-left: 4px solid var(--color-border-success);
 }
 
 .enum-row-display.got-wrong {
     background: var(--color-background-danger);
     border-color: var(--color-border-danger);
     color: var(--color-text-danger);
-    border-left: 4px solid var(--color-border-danger);
 }
 
 .enum-row-display.skipped-input {
     background: var(--color-background-secondary);
     border-color: var(--color-border-tertiary);
     opacity: 0.8;
-    border-left: 4px solid var(--color-text-tertiary);
 }
 
 .enum-row-header {
@@ -1067,7 +1069,6 @@ body {
     background: rgba(186, 117, 23, 0.08);
     border: 0.5px solid var(--color-border-warning);
     color: var(--color-text-warning);
-    border-left: 4px solid var(--color-border-warning);
     border-radius: var(--border-radius-md);
     padding: 12px 16px;
     margin-top: 16px;
@@ -1317,21 +1318,18 @@ body {
     background: var(--color-background-success);
     border-color: var(--color-border-success);
     color: var(--color-text-success);
-    border-left: 4px solid var(--color-border-success);
 }
 
 .match-result-row.got-wrong {
     background: var(--color-background-danger);
     border-color: var(--color-border-danger);
     color: var(--color-text-danger);
-    border-left: 4px solid var(--color-border-danger);
 }
 
 .match-result-row.skipped-input {
     background: var(--color-background-secondary);
     border-color: var(--color-border-tertiary);
     opacity: 0.8;
-    border-left: 4px solid var(--color-text-tertiary);
 }
 
 .match-res-header {
@@ -1450,4 +1448,330 @@ body {
         width: 18px;
         height: 18px;
     }
+}
+
+/* ==========================================================================
+   LMS QUIZ MODE
+   ========================================================================== */
+
+/* ── Collapsible Question Navigator Panel ── */
+.lms-nav-panel {
+    margin-top: 1rem;
+    border: 0.5px solid var(--color-border-tertiary);
+    border-radius: var(--border-radius-lg);
+    background: var(--color-background-primary);
+    overflow: hidden;
+}
+
+.lms-nav-toggle {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 14px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--color-text-secondary);
+    transition: background 0.15s;
+}
+
+.lms-nav-toggle:hover {
+    background: var(--color-background-secondary);
+}
+
+.lms-nav-chevron {
+    font-size: 10px;
+    transition: transform 0.2s;
+}
+
+.lms-nav-chevron.open {
+    transform: rotate(180deg);
+}
+
+/* ── Question Navigator Grid ── */
+.lms-nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    padding: 0 14px;
+    opacity: 0;
+    visibility: hidden;
+    max-height: 0;
+    transition: opacity 0.2s ease, visibility 0.2s ease;
+}
+
+.lms-nav.open {
+    opacity: 1;
+    visibility: visible;
+    max-height: none;
+    padding: 0 14px 12px;
+}
+
+.lms-nav-item {
+    width: 34px;
+    height: 34px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--border-radius-md);
+    border: 0.5px solid var(--color-border-secondary);
+    background: transparent;
+    color: var(--color-text-secondary);
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s, color 0.15s, transform 0.1s;
+    font-family: inherit;
+    padding: 0;
+}
+
+.lms-nav-item:hover {
+    background: var(--color-background-secondary);
+    transform: translateY(-1px);
+}
+
+.lms-nav-item.answered {
+    background: var(--color-background-secondary);
+    border-color: var(--color-border-primary);
+    color: var(--color-text-primary);
+    font-weight: 600;
+}
+
+.lms-nav-item.active {
+    background: var(--color-text-primary);
+    color: var(--color-background-primary);
+    border-color: var(--color-text-primary);
+    font-weight: 600;
+}
+
+.lms-nav-item.active.answered {
+    background: var(--color-text-primary);
+    color: var(--color-background-primary);
+    border-color: var(--color-text-primary);
+}
+
+/* ── LMS Controls (Prev/Next + Complete) ── */
+.lms-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+}
+
+.lms-prev-btn,
+.lms-next-btn {
+    padding: 9px 18px;
+    border: 0.5px solid var(--color-border-secondary);
+    border-radius: var(--border-radius-md);
+    background: transparent;
+    color: var(--color-text-primary);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    font-family: inherit;
+    transition: background 0.15s, opacity 0.15s;
+}
+
+.lms-prev-btn:hover:not([disabled]),
+.lms-next-btn:hover:not([disabled]) {
+    background: var(--color-background-secondary);
+}
+
+.lms-prev-btn:disabled,
+.lms-next-btn:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+}
+
+.lms-complete-btn {
+    padding: 9px 20px;
+    border: none;
+    border-radius: var(--border-radius-md);
+    background: var(--color-text-primary);
+    color: var(--color-background-primary);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    font-family: inherit;
+    transition: opacity 0.15s;
+}
+
+.lms-complete-btn:hover {
+    opacity: 0.85;
+}
+
+.lms-answered-count {
+    font-size: 12px;
+    color: var(--color-text-secondary);
+    text-align: center;
+    margin-bottom: 0.75rem;
+}
+
+/* ── LMS Review Screen ── */
+.lms-review-header {
+    font-size: 18px;
+    font-weight: 500;
+    color: var(--color-text-primary);
+    margin-bottom: 4px;
+}
+
+.lms-review-sub {
+    font-size: 13px;
+    color: var(--color-text-secondary);
+    margin-bottom: 1.25rem;
+    line-height: 1.5;
+}
+
+.lms-review-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 1.25rem;
+}
+
+.lms-review-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 10px 14px;
+    border: 0.5px solid var(--color-border-tertiary);
+    border-radius: var(--border-radius-md);
+    background: var(--color-background-primary);
+    font-size: 12px;
+    line-height: 1.55;
+    transition: background 0.15s;
+}
+
+.lms-review-item:hover {
+    background: var(--color-background-secondary);
+}
+
+.lms-review-item.blank {
+    border-color: var(--color-border-warning);
+    background: var(--color-background-warning);
+}
+
+.lms-review-item.filled {
+    border-color: var(--color-border-tertiary);
+}
+
+@media (max-width: 600px) {
+    .lms-nav-item {
+        width: 40px;
+        height: 40px;
+        font-size: 13px;
+    }
+}
+
+.lms-review-num {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--color-text-tertiary);
+    min-width: 28px;
+    padding-top: 1px;
+}
+
+.lms-review-body {
+    flex: 1;
+    min-width: 0;
+}
+
+.lms-review-q {
+    color: var(--color-text-primary);
+    margin-bottom: 3px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.lms-review-answer {
+    color: var(--color-text-secondary);
+}
+
+.lms-review-answer strong {
+    color: var(--color-text-primary);
+    font-weight: 500;
+}
+
+.lms-review-answer .blank-label {
+    color: var(--color-text-warning);
+    font-style: italic;
+}
+
+.lms-review-goto {
+    font-size: 11px;
+    color: var(--color-text-secondary);
+    background: none;
+    border: 0.5px solid var(--color-border-tertiary);
+    border-radius: var(--border-radius-md);
+    padding: 5px 10px;
+    cursor: pointer;
+    font-family: inherit;
+    white-space: nowrap;
+    align-self: center;
+    transition: background 0.15s, color 0.15s;
+}
+
+.lms-review-goto:hover {
+    background: var(--color-background-secondary);
+    color: var(--color-text-primary);
+}
+
+.lms-submit-row {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 1rem;
+}
+
+.lms-submit-btn {
+    width: 100%;
+    padding: 11px;
+    border-radius: var(--border-radius-md);
+    background: var(--color-text-primary);
+    color: var(--color-background-primary);
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    border: none;
+    font-family: inherit;
+    transition: opacity 0.15s;
+}
+
+.lms-submit-btn:hover {
+    opacity: 0.85;
+}
+
+.lms-back-btn {
+    width: 100%;
+    padding: 10px;
+    border-radius: var(--border-radius-md);
+    background: transparent;
+    color: var(--color-text-primary);
+    border: 0.5px solid var(--color-border-secondary);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    font-family: inherit;
+    transition: background 0.15s;
+}
+
+.lms-back-btn:hover {
+    background: var(--color-background-secondary);
+}
+
+.lms-warning-bar {
+    background: var(--color-background-warning);
+    color: var(--color-text-warning);
+    border: 0.5px solid var(--color-border-warning);
+    padding: 9px 12px;
+    border-radius: var(--border-radius-md);
+    font-size: 12px;
+    line-height: 1.5;
+    margin-bottom: 1rem;
 }
