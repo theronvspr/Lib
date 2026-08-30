@@ -61,12 +61,13 @@
         let QUIZ_TITLE = "Quiz";
         let QUIZ_SUBTITLE = "Select question types to include, then start.";
         let QUIZ_ID = '';
+        let QUIZ_MODULE_LABELS = {};
 
         let state = {
             screen: 'loading',
             selectedVersion: null,
             selTypes: new Set(),
-            selModules: new Set([1, 2, 4]),
+            selModules: new Set(),
             shuffle: true,
             infiniteMode: false,
             lmsMode: false,
@@ -219,6 +220,7 @@
                 QUIZ_VERSIONS = data.versions || [];
                 QUIZ_TITLE = data.title || QUIZ_ID;
                 QUIZ_SUBTITLE = data.subtitle || "Select question types to include, then start.";
+                QUIZ_MODULE_LABELS = data.moduleLabels || data.modules || {};
                 document.title = QUIZ_TITLE + " — Quiz";
 
                 if (QUIZ_VERSIONS.length > 0) {
@@ -226,6 +228,8 @@
                 }
                 QS = getFilteredQS();
                 state.selTypes = new Set(getAvailableTypes());
+                const allMods = QS.map(q => q.module).filter(m => m !== undefined);
+                state.selModules = new Set(allMods);
                 state.screen = 'setup';
                 render();
             } catch (err) {
@@ -363,17 +367,17 @@
             let moduleBlock = '';
             if (hasModules) {
                 const availableModules = [...new Set(QS.map(q => q.module).filter(m => m !== undefined))].sort((a,b)=>a-b);
-                const mLabels = {
+                const defaultMLabels = {
                     1: "Module 1: HTML Forms",
                     2: "Module 2: JavaScript Basics & Logic",
                     4: "Module 4: Document Object Model (DOM)"
                 };
                 const mItems = availableModules.map(m => {
                     const checked = state.selModules.has(m);
-                    const label = mLabels[m] || `Module ${m}`;
+                    const label = (QUIZ_MODULE_LABELS && QUIZ_MODULE_LABELS[m]) || defaultMLabels[m] || `Module ${m}`;
                     const mCount = QS.filter(q => q.module === m && state.selTypes.has(q.type)).length;
                     return `<div class="mod-tile${checked ? ' sel' : ''}" data-module="${m}">
-                        <div class="mod-tile-name">${label}</div>
+                        <div class="mod-tile-name">${escapeHtml(label)}</div>
                         <div class="mod-tile-meta">${mCount}q</div>
                     </div>`;
                 }).join('');

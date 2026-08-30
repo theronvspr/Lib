@@ -56,6 +56,18 @@
                 "Encryption",
                 "Reviewer"
             ]
+        },
+        {
+            "id": "typescript-reviewer",
+            "title": "TypeScript, OOP, Decorators, and Webpack",
+            "description": "Comprehensive quiz on TypeScript fundamentals, OOP classes, decorators, Webpack pipeline, ITL guidelines, and advanced types.",
+            "tags": [
+                "TypeScript",
+                "OOP",
+                "Webpack",
+                "Decorators",
+                "Reviewer"
+            ]
         }
     ]
 }

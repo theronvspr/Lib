@@ -1,0 +1,846 @@
+{
+    "title": "TypeScript, OOP, Decorators, and Webpack",
+    "subtitle": "Comprehensive reviewer for Modules 1 to 6 covering TypeScript basics, classes, decorators, Webpack, ITL rules, and advanced types.",
+    "moduleLabels": {
+        "1": "Module 1: Core Foundations",
+        "2": "Module 2: OOP & Classes",
+        "3": "Module 3: Decorators",
+        "4": "Module 4: Webpack & Modules",
+        "5": "Module 5: ITL Guidelines",
+        "6": "Module 6: Advanced Concepts"
+    },
+    "questions": [
+        {
+            "t": "What causes a dynamic typing runtime error in JavaScript?",
+            "module": 1,
+            "type": "mc",
+            "choices": [
+                "Invoking a number method on a string variable.",
+                "Declaring a constant variable without a value.",
+                "Importing a module that contains private data.",
+                "Running code inside an outdated browser engine."
+            ],
+            "a": "Invoking a number method on a string variable."
+        },
+        {
+            "t": "What happens when you read the value property of a numeric HTML input in JavaScript?",
+            "module": 1,
+            "type": "mc",
+            "choices": [
+                "The browser returns the value as a plain text string.",
+                "The browser converts the value into a floating number.",
+                "The browser returns null until the user presses enter.",
+                "The browser triggers an automatic type check failure."
+            ],
+            "a": "The browser returns the value as a plain text string."
+        },
+        {
+            "t": "What does the exclamation mark operator (!) do when placed after a DOM selector query?",
+            "module": 1,
+            "type": "mc",
+            "choices": [
+                "It asserts to the compiler that the returned node is not null.",
+                "It converts the selected HTML element into an active listener.",
+                "It forces the browser engine to search for the element again.",
+                "It resets all existing property values on that DOM component."
+            ],
+            "a": "It asserts to the compiler that the returned node is not null."
+        },
+        {
+            "t": "What does the as HTMLInputElement type assertion do in TypeScript?",
+            "module": 1,
+            "type": "mc",
+            "choices": [
+                "It informs the compiler of the specific DOM element type.",
+                "It creates a new HTML input element in active memory.",
+                "It parses the inner text content of the element as JSON.",
+                "It converts the element structure into a plain data array."
+            ],
+            "a": "It informs the compiler of the specific DOM element type."
+        },
+        {
+            "t": "What does the unary plus operator (+) do when placed before a string value?",
+            "module": 1,
+            "type": "mc",
+            "choices": [
+                "It converts the string value into a number.",
+                "It creates a copy of the input DOM element.",
+                "It checks if the string contains any text.",
+                "It logs the element value into the console."
+            ],
+            "a": "It converts the string value into a number."
+        },
+        {
+            "t": "How does a transpiler differ from a standard compiler?",
+            "module": 1,
+            "type": "mc",
+            "choices": [
+                "It outputs code in another high-level language instead of machine code.",
+                "It converts source files directly into binary instructions for the CPU.",
+                "It bundles external package dependencies into one single output script.",
+                "It executes the written source program inside memory without compiling."
+            ],
+            "a": "It outputs code in another high-level language instead of machine code."
+        },
+        {
+            "t": "Why cannot web browsers execute TypeScript files directly?",
+            "module": 1,
+            "type": "mc",
+            "choices": [
+                "Web browsers only understand and run standard JavaScript syntax.",
+                "Web browsers require all files to be compiled into binary code.",
+                "Web browsers block all strongly typed files for security reasons.",
+                "Web browsers only load scripts that come from an external domain."
+            ],
+            "a": "Web browsers only understand and run standard JavaScript syntax."
+        },
+        {
+            "t": "What does TypeScript do when you initialize a variable with a value?",
+            "module": 1,
+            "type": "mc",
+            "choices": [
+                "It automatically infers the data type from that initial value.",
+                "It converts the variable into a universal dynamic any structure.",
+                "It creates a global interface definition for that single item.",
+                "It prevents the variable from holding any future assigned value."
+            ],
+            "a": "It automatically infers the data type from that initial value."
+        },
+        {
+            "t": "What does the void return type signify on a TypeScript function?",
+            "module": 1,
+            "type": "mc",
+            "choices": [
+                "It indicates that the function returns no value.",
+                "It forces the function to return a null pointer.",
+                "It converts any returned result into an integer.",
+                "It prevents the function from taking parameters."
+            ],
+            "a": "It indicates that the function returns no value."
+        },
+        {
+            "t": "How does the unknown type differ from the any type in TypeScript?",
+            "module": 1,
+            "type": "mc",
+            "choices": [
+                "It requires you to narrow or check the type before using the value.",
+                "It allows you to invoke arbitrary methods without prior validation.",
+                "It converts any assigned primitive into an immutable object shape.",
+                "It disables all static type checks across the entire project file."
+            ],
+            "a": "It requires you to narrow or check the type before using the value."
+        },
+        {
+            "t": "What is the primary function of a union type in TypeScript?",
+            "module": 1,
+            "type": "mc",
+            "choices": [
+                "It allows a single variable to store several specified types.",
+                "It merges two separate class definitions into one constructor.",
+                "It converts an array of numbers into a fixed tuple structure.",
+                "It creates an immutable copy of an existing interface contract."
+            ],
+            "a": "It allows a single variable to store several specified types."
+        },
+        {
+            "t": "What does a literal type do in TypeScript?",
+            "module": 1,
+            "type": "mc",
+            "choices": [
+                "It restricts a variable to an exact, specific value.",
+                "It allows a variable to accept any primitive number.",
+                "It converts a string variable into an integer literal.",
+                "It forces an object to inherit properties from another."
+            ],
+            "a": "It restricts a variable to an exact, specific value."
+        },
+        {
+            "t": "What is one key difference between an interface and a type alias?",
+            "module": 1,
+            "type": "mc",
+            "choices": [
+                "Interfaces support declaration merging while type aliases do not.",
+                "Type aliases accept method signatures while interfaces reject them.",
+                "Interfaces only store primitives while type aliases handle objects.",
+                "Type aliases allow class implementation while interfaces forbid it."
+            ],
+            "a": "Interfaces support declaration merging while type aliases do not."
+        },
+        {
+            "t": "What is the effect of placing a question mark (?) after an interface property name?",
+            "module": 1,
+            "type": "mc",
+            "choices": [
+                "It marks the property as optional during type validation.",
+                "It prevents the property from being assigned a null value.",
+                "It converts the property into a private internal variable.",
+                "It forces the property to receive a default initial string."
+            ],
+            "a": "It marks the property as optional during type validation."
+        },
+        {
+            "t": "What is the default numeric value of the first member in an unassigned enum?",
+            "module": 1,
+            "type": "mc",
+            "choices": [
+                "It starts at the numeric value 0.",
+                "It starts at the numeric value 1.",
+                "It defaults to an empty string.",
+                "It requires an explicit number."
+            ],
+            "a": "It starts at the numeric value 0."
+        },
+        {
+            "t": "What is the main benefit of using string enums in TypeScript?",
+            "module": 1,
+            "type": "mc",
+            "choices": [
+                "They eliminate magic strings and group related constants together.",
+                "They allow functions to take an unlimited number of arguments.",
+                "They convert client-side scripts into compiled machine binaries.",
+                "They execute code in the browser without requiring transpilation."
+            ],
+            "a": "They eliminate magic strings and group related constants together."
+        },
+        {
+            "t": "In TypeScript, this operator (!) asserts to the compiler that a value returned from a query is guaranteed not to be null or undefined.",
+            "module": 1,
+            "type": "id",
+            "a": "non-null assertion operator",
+            "alt": ["!", "non-null assertion", "non null assertion operator", "non null assertion"]
+        },
+        {
+            "t": "This keyword in TypeScript is used to define custom type aliases for unions, primitives, or object shapes.",
+            "module": 1,
+            "type": "id",
+            "a": "type",
+            "alt": ["type keyword"]
+        },
+        {
+            "t": "This TypeScript keyword defines an object contract that can be implemented by classes and supports declaration merging.",
+            "module": 1,
+            "type": "id",
+            "a": "interface",
+            "alt": ["interface keyword"]
+        },
+        {
+            "t": "This type-safe alternative to 'any' requires developers to narrow or verify data types before performing operations on the value.",
+            "module": 1,
+            "type": "id",
+            "a": "unknown",
+            "alt": ["unknown type"]
+        },
+        {
+            "t": "Web browsers can execute TypeScript (.ts) files directly without any transpilation.",
+            "module": 1,
+            "type": "tf",
+            "a": "False"
+        },
+        {
+            "t": "In TypeScript, a function with a return type of 'void' does not return any value to the caller.",
+            "module": 1,
+            "type": "tf",
+            "a": "True"
+        },
+        {
+            "t": "List three core primitive data types supported in TypeScript.",
+            "module": 1,
+            "type": "enum",
+            "ordered": false,
+            "a": ["number", "string", "boolean"],
+            "alt": [
+                ["number", "numeric"],
+                ["string", "text"],
+                ["boolean", "bool"]
+            ]
+        },
+        {
+            "t": "How does JavaScript resolve a property lookup on an object?",
+            "module": 2,
+            "type": "mc",
+            "choices": [
+                "It searches the object and then moves up the prototype chain.",
+                "It queries the global namespace before checking local fields.",
+                "It inspects all child classes before reading current instance.",
+                "It converts all inherited methods into static class functions."
+            ],
+            "a": "It searches the object and then moves up the prototype chain."
+        },
+        {
+            "t": "What does the hasOwnProperty() method check on an object?",
+            "module": 2,
+            "type": "mc",
+            "choices": [
+                "It checks if a property belongs directly to that object instance.",
+                "It deletes inherited prototype methods from the current instance.",
+                "It copies all prototype fields into a brand new object instance.",
+                "It prevents external code from adding properties to that instance."
+            ],
+            "a": "It checks if a property belongs directly to that object instance."
+        },
+        {
+            "t": "What is one limitation of vanilla ES6 classes compared to TypeScript classes?",
+            "module": 2,
+            "type": "mc",
+            "choices": [
+                "They lack built-in access modifiers to restrict property scope.",
+                "They cannot use constructor functions during object creation.",
+                "They prevent developers from creating multiple class instances.",
+                "They do not allow methods to return numeric or string values."
+            ],
+            "a": "They lack built-in access modifiers to restrict property scope."
+        },
+        {
+            "t": "Which scope rule applies to a private member in a TypeScript class?",
+            "module": 2,
+            "type": "mc",
+            "choices": [
+                "It is accessible only from within the declaring class body.",
+                "It is accessible within the class and all derived subclasses.",
+                "It is accessible from any external script importing the file.",
+                "It is accessible only through static helper factory methods."
+            ],
+            "a": "It is accessible only from within the declaring class body."
+        },
+        {
+            "t": "Which scope rule applies to a protected member in a TypeScript class?",
+            "module": 2,
+            "type": "mc",
+            "choices": [
+                "It is accessible within the declaring class and its subclasses.",
+                "It is accessible from any external function outside the class.",
+                "It is accessible only inside the top constructor declaration.",
+                "It is accessible exclusively by static utility class methods."
+            ],
+            "a": "It is accessible within the declaring class and its subclasses."
+        },
+        {
+            "t": "What effect does the readonly modifier have on a class property?",
+            "module": 2,
+            "type": "mc",
+            "choices": [
+                "It prevents reassignment of the field after initialization.",
+                "It hides the property from being viewed in subclass methods.",
+                "It converts the property value into an immutable static enum.",
+                "It restricts property access exclusively to private getters."
+            ],
+            "a": "It prevents reassignment of the field after initialization."
+        },
+        {
+            "t": "How does constructor parameter property shorthand work in TypeScript?",
+            "module": 2,
+            "type": "mc",
+            "choices": [
+                "It declares and assigns class fields directly in parameters.",
+                "It converts all incoming constructor arguments into strings.",
+                "It generates automatic getter and setter accessors for fields.",
+                "It prevents the class from accepting any optional arguments."
+            ],
+            "a": "It declares and assigns class fields directly in parameters."
+        },
+        {
+            "t": "What happens when a TypeScript class implements an interface?",
+            "module": 2,
+            "type": "mc",
+            "choices": [
+                "The class must define every property and method in the contract.",
+                "The class automatically inherits method bodies from that source.",
+                "The class cannot declare any extra methods outside the contract.",
+                "The class converts all interface fields into private properties."
+            ],
+            "a": "The class must define every property and method in the contract."
+        },
+        {
+            "t": "This keyword in TypeScript is used by a class to adopt and satisfy the contract of an interface.",
+            "module": 2,
+            "type": "id",
+            "a": "implements",
+            "alt": ["implements keyword"]
+        },
+        {
+            "t": "This visibility modifier makes a class property accessible only within the declaring class and any derived child classes.",
+            "module": 2,
+            "type": "id",
+            "a": "protected",
+            "alt": ["protected modifier", "protected keyword"]
+        },
+        {
+            "t": "This property modifier prevents a class field from being changed or reassigned after its initial declaration.",
+            "module": 2,
+            "type": "id",
+            "a": "readonly",
+            "alt": ["readonly modifier", "readonly keyword"]
+        },
+        {
+            "t": "List the three visibility access modifiers available in TypeScript classes.",
+            "module": 2,
+            "type": "enum",
+            "ordered": false,
+            "a": ["public", "protected", "private"],
+            "alt": [
+                ["public"],
+                ["protected"],
+                ["private"]
+            ]
+        },
+        {
+            "t": "In TypeScript classes, all properties and methods are public by default unless an access modifier is specified.",
+            "module": 2,
+            "type": "tf",
+            "a": "True"
+        },
+        {
+            "t": "When does a TypeScript decorator function execute?",
+            "module": 3,
+            "type": "mc",
+            "choices": [
+                "It runs once when the class is defined and loaded into memory.",
+                "It runs every time a new instance of the class is constructed.",
+                "It runs only when an attached method gets called by a caller.",
+                "It runs after all child subclass constructors finish execution."
+            ],
+            "a": "It runs once when the class is defined and loaded into memory."
+        },
+        {
+            "t": "Which group contains valid attachment targets for TypeScript decorators?",
+            "module": 3,
+            "type": "mc",
+            "choices": [
+                "Classes, methods, accessors, properties, and parameters.",
+                "Interfaces, type aliases, enums, unions, and modules.",
+                "Import statements, export clauses, packages, and files.",
+                "HTML elements, CSS selectors, script tags, and forms."
+            ],
+            "a": "Classes, methods, accessors, properties, and parameters."
+        },
+        {
+            "t": "What happens when a class decorator modifies constructor.prototype?",
+            "module": 3,
+            "type": "mc",
+            "choices": [
+                "It attaches properties directly to the class prototype object.",
+                "It deletes existing properties from every created class instance.",
+                "It stops the class constructor from executing when instantiated.",
+                "It converts all class methods into private static declarations."
+            ],
+            "a": "It attaches properties directly to the class prototype object."
+        },
+        {
+            "t": "What is the purpose of a decorator factory in TypeScript?",
+            "module": 3,
+            "type": "mc",
+            "choices": [
+                "It returns a decorator function while accepting custom arguments.",
+                "It creates multiple instances of a class in a separate thread.",
+                "It converts standard ES6 classes into plain prototype objects.",
+                "It bundles all module dependencies into a single output file."
+            ],
+            "a": "It returns a decorator function while accepting custom arguments."
+        },
+        {
+            "t": "This character prefix is placed immediately before a decorator function name when decorating a target in TypeScript.",
+            "module": 3,
+            "type": "id",
+            "a": "@",
+            "alt": ["@", "at", "at symbol", "at sign"]
+        },
+        {
+            "t": "This type of higher-order function takes custom configuration parameters and returns an active decorator function.",
+            "module": 3,
+            "type": "id",
+            "a": "decorator factory",
+            "alt": ["decorator factory function", "factory function", "factory"]
+        },
+        {
+            "t": "TypeScript decorators execute each time a new instance of a class is created using the 'new' keyword.",
+            "module": 3,
+            "type": "tf",
+            "a": "False"
+        },
+        {
+            "t": "List the 5 attachment targets for TypeScript decorators.",
+            "module": 3,
+            "type": "enum",
+            "ordered": false,
+            "a": ["classes", "methods", "accessors", "properties", "parameters"],
+            "alt": [
+                ["classes", "class", "class declarations"],
+                ["methods", "method"],
+                ["accessors", "accessor", "getters and setters", "getter and setter"],
+                ["properties", "property"],
+                ["parameters", "parameter"]
+            ]
+        },
+        {
+            "t": "What is the execution order when a script imports ES modules?",
+            "module": 4,
+            "type": "mc",
+            "choices": [
+                "The imported dependency modules execute before the main script.",
+                "The main importing script executes before any imported module.",
+                "All modules execute concurrently without any defined sequence.",
+                "The browser waits for user interaction before running modules."
+            ],
+            "a": "The imported dependency modules execute before the main script."
+        },
+        {
+            "t": "Why do browser-based ES modules require a local web server to run?",
+            "module": 4,
+            "type": "mc",
+            "choices": [
+                "Browser security policies block module imports using file protocols.",
+                "Web browsers cannot parse JavaScript files without server headers.",
+                "Local file paths prevent the browser from minifying script bundles.",
+                "TypeScript files must be compiled dynamically on the remote server."
+            ],
+            "a": "Browser security policies block module imports using file protocols."
+        },
+        {
+            "t": "Which command creates a new default tsconfig.json file in a project?",
+            "module": 4,
+            "type": "mc",
+            "choices": [
+                "Run the command tsc --init in the terminal.",
+                "Run the command npm init -y in the terminal.",
+                "Run the command git init in the root folder.",
+                "Run the command webpack build in the shell."
+            ],
+            "a": "Run the command tsc --init in the terminal."
+        },
+        {
+            "t": "What do the outDir and rootDir options configure in tsconfig.json?",
+            "module": 4,
+            "type": "mc",
+            "choices": [
+                "outDir specifies compiled output and rootDir specifies source files.",
+                "outDir specifies source files and rootDir specifies compiled output.",
+                "outDir includes package dependencies and rootDir sets node modules.",
+                "outDir defines dev server paths and rootDir holds the static HTML."
+            ],
+            "a": "outDir specifies compiled output and rootDir specifies source files."
+        },
+        {
+            "t": "What problem occurs when loading many separate JavaScript files in HTML?",
+            "module": 4,
+            "type": "mc",
+            "choices": [
+                "It causes excessive network requests and fragile script ordering.",
+                "It forces the browser engine to disable all modern CSS features.",
+                "It converts local variable declarations into global window names.",
+                "It blocks the DOM from rendering any static text on the screen."
+            ],
+            "a": "It causes excessive network requests and fragile script ordering."
+        },
+        {
+            "t": "Which 5 packages are required to set up Webpack with TypeScript?",
+            "module": 4,
+            "type": "mc",
+            "choices": [
+                "webpack, webpack-cli, webpack-dev-server, typescript, and ts-loader.",
+                "webpack, webpack-core, ts-node, typescript, and lite-server.",
+                "webpack-cli, babel-loader, typescript, parcel, and webpack-server.",
+                "webpack, typescript, ts-lint, dev-server, and browser-sync."
+            ],
+            "a": "webpack, webpack-cli, webpack-dev-server, typescript, and ts-loader."
+        },
+        {
+            "t": "What is the role of ts-loader in a Webpack build pipeline?",
+            "module": 4,
+            "type": "mc",
+            "choices": [
+                "It transpiles TypeScript files into JavaScript during bundling.",
+                "It provides a local development server with hot module reload.",
+                "It minifies external CSS files into a single production sheet.",
+                "It creates sourcemap files for debugging inside the terminal."
+            ],
+            "a": "It transpiles TypeScript files into JavaScript during bundling."
+        },
+        {
+            "t": "What does the resolve.extensions setting do in a Webpack configuration?",
+            "module": 4,
+            "type": "mc",
+            "choices": [
+                "It allows developers to leave out file extensions in import paths.",
+                "It automatically renames all compiled bundle files in the output.",
+                "It converts legacy CommonJS modules into modern ECMAScript files.",
+                "It prevents Webpack from processing files inside the src directory."
+            ],
+            "a": "It allows developers to leave out file extensions in import paths."
+        },
+        {
+            "t": "This Webpack loader package is responsible for transpiling TypeScript source files into JavaScript.",
+            "module": 4,
+            "type": "id",
+            "a": "ts-loader",
+            "alt": ["ts-loader package"]
+        },
+        {
+            "t": "This configuration file is used by the TypeScript compiler to set compiler options like outDir and rootDir.",
+            "module": 4,
+            "type": "id",
+            "a": "tsconfig.json",
+            "alt": ["tsconfig", "tsconfig.json file"]
+        },
+        {
+            "t": "This HTML script tag attribute is required when loading standard ES modules directly in the browser.",
+            "module": 4,
+            "type": "id",
+            "a": "type=\"module\"",
+            "alt": ["type='module'", "type=module", "module"]
+        },
+        {
+            "t": "List the 5 core npm packages installed for a Webpack TypeScript build setup.",
+            "module": 4,
+            "type": "enum",
+            "ordered": false,
+            "a": ["webpack", "webpack-cli", "webpack-dev-server", "typescript", "ts-loader"],
+            "alt": [
+                ["webpack"],
+                ["webpack-cli"],
+                ["webpack-dev-server"],
+                ["typescript"],
+                ["ts-loader"]
+            ]
+        },
+        {
+            "t": "Webpack combines multiple TypeScript files and dependencies into a single output bundle to reduce HTTP requests.",
+            "module": 4,
+            "type": "tf",
+            "a": "True"
+        },
+        {
+            "t": "Which naming convention is required for classes and interfaces under ITL guidelines?",
+            "module": 5,
+            "type": "mc",
+            "choices": [
+                "Use PascalCase for class and interface names.",
+                "Use camelCase for class and interface names.",
+                "Use snake_case for class and interface names.",
+                "Use kebab-case for class and interface names."
+            ],
+            "a": "Use PascalCase for class and interface names."
+        },
+        {
+            "t": "Which naming convention is required for enum members under ITL guidelines?",
+            "module": 5,
+            "type": "mc",
+            "choices": [
+                "Use CAPITALIZED_SNAKE_CASE for all enum member fields.",
+                "Use lower_snake_case for all enum member fields.",
+                "Use standard camelCase for all enum member fields.",
+                "Use strict PascalCase for all enum member fields."
+            ],
+            "a": "Use CAPITALIZED_SNAKE_CASE for all enum member fields."
+        },
+        {
+            "t": "Which naming convention applies to functions, methods, and variables under ITL guidelines?",
+            "module": 5,
+            "type": "mc",
+            "choices": [
+                "Use camelCase for function names and variable identifiers.",
+                "Use PascalCase for function names and variable identifiers.",
+                "Use snake_case for function names and variable identifiers.",
+                "Use kebab-case for function names and variable identifiers."
+            ],
+            "a": "Use camelCase for function names and variable identifiers."
+        },
+        {
+            "t": "Which naming convention applies to files, folders, and HTML id attributes under ITL guidelines?",
+            "module": 5,
+            "type": "mc",
+            "choices": [
+                "Use snake_case for all files, folders, and HTML IDs.",
+                "Use PascalCase for all files, folders, and HTML IDs.",
+                "Use camelCase for all files, folders, and HTML IDs.",
+                "Use kebab-case for all files, folders, and HTML IDs."
+            ],
+            "a": "Use snake_case for all files, folders, and HTML IDs."
+        },
+        {
+            "t": "Which practice aligns with DLSU-D ITL TypeScript conventions?",
+            "module": 5,
+            "type": "mc",
+            "choices": [
+                "Always use curly braces when importing named components.",
+                "Include the dot js file extension on all Webpack imports.",
+                "Use the any type whenever variable types are uncertain.",
+                "Commit the node modules directory to the Git repository."
+            ],
+            "a": "Always use curly braces when importing named components."
+        },
+        {
+            "t": "What is the standard format for a TODO comment in a TypeScript file under ITL guidelines?",
+            "module": 5,
+            "type": "mc",
+            "choices": [
+                "// TODO(Lastname, Givenname): What needs to be done",
+                "// NOTE(Lastname, Givenname): What needs to be done",
+                "<!-- TODO(Lastname, Givenname): What needs to be done -->",
+                "// TASK(Lastname, Givenname): What needs to be done"
+            ],
+            "a": "// TODO(Lastname, Givenname): What needs to be done"
+        },
+        {
+            "t": "Under DLSU-D ITL conventions, CSS class names must be formatted using this naming convention.",
+            "module": 5,
+            "type": "id",
+            "a": "kebab-case",
+            "alt": ["kebab case", "kebab-case convention"]
+        },
+        {
+            "t": "Under DLSU-D ITL conventions, enum member names must follow this uppercase naming style.",
+            "module": 5,
+            "type": "id",
+            "a": "CAPITALIZED_SNAKE_CASE",
+            "alt": ["capitalized snake case", "SCREAMING_SNAKE_CASE", "UPPER_SNAKE_CASE", "capitalized_snake_case", "screaming snake case"]
+        },
+        {
+            "t": "Under ITL guidelines, the node_modules folder should always be excluded using a .gitignore file.",
+            "module": 5,
+            "type": "tf",
+            "a": "True"
+        },
+        {
+            "t": "Under ITL guidelines, you should explicitly include the .js extension when importing TypeScript modules with Webpack.",
+            "module": 5,
+            "type": "tf",
+            "a": "False"
+        },
+        {
+            "t": "Where does the JavaScript prototype chain end during a property lookup?",
+            "module": 6,
+            "type": "mc",
+            "choices": [
+                "It terminates at Object.prototype which points to null.",
+                "It terminates at Function.prototype in the memory heap.",
+                "It loops indefinitely until the browser stops execution.",
+                "It resets back to the initial instance calling context."
+            ],
+            "a": "It terminates at Object.prototype which points to null."
+        },
+        {
+            "t": "How do subclasses pass parameters to a parent class constructor in TypeScript?",
+            "module": 6,
+            "type": "mc",
+            "choices": [
+                "They invoke the super keyword with required arguments.",
+                "They call the parent class name directly as a method.",
+                "They assign values to this before invoking the parent.",
+                "They use the extends keyword inside the method block."
+            ],
+            "a": "They invoke the super keyword with required arguments."
+        },
+        {
+            "t": "What do getter and setter accessors do in a TypeScript class?",
+            "module": 6,
+            "type": "mc",
+            "choices": [
+                "They intercept and control reads and writes to private fields.",
+                "They convert regular class methods into static background tasks.",
+                "They automatically save object states to local browser storage.",
+                "They force all numeric variables to round to the nearest whole."
+            ],
+            "a": "They intercept and control reads and writes to private fields."
+        },
+        {
+            "t": "What is a key characteristic of an abstract class in TypeScript?",
+            "module": 6,
+            "type": "mc",
+            "choices": [
+                "It cannot be instantiated directly and serves as a base class.",
+                "It prevents derived subclasses from adding any new methods.",
+                "It allows all defined methods to run without implementation.",
+                "It converts all instance fields into public global variables."
+            ],
+            "a": "It cannot be instantiated directly and serves as a base class."
+        },
+        {
+            "t": "What is the syntax difference between default imports and named imports?",
+            "module": 6,
+            "type": "mc",
+            "choices": [
+                "Named imports require curly braces while default imports do not.",
+                "Default imports require curly braces while named imports do not.",
+                "Named imports only import types while default imports load code.",
+                "Default imports allow multiple values while named imports take one."
+            ],
+            "a": "Named imports require curly braces while default imports do not."
+        },
+        {
+            "t": "What does the Partial<T> utility type do in TypeScript?",
+            "module": 6,
+            "type": "mc",
+            "choices": [
+                "It transforms every property in the type into an optional field.",
+                "It makes every property in the type completely immutable to edits.",
+                "It extracts a specific subset of selected keys from the object.",
+                "It removes a specific group of unwanted keys from the contract."
+            ],
+            "a": "It transforms every property in the type into an optional field."
+        },
+        {
+            "t": "What does the Readonly<T> utility type do in TypeScript?",
+            "module": 6,
+            "type": "mc",
+            "choices": [
+                "It makes all properties in the type immutable and read-only.",
+                "It makes all properties in the type optional during assignment.",
+                "It creates a new type containing only primitive data fields.",
+                "It removes all method signatures from an interface contract."
+            ],
+            "a": "It makes all properties in the type immutable and read-only."
+        },
+        {
+            "t": "What does the Omit<T, K> utility type do in TypeScript?",
+            "module": 6,
+            "type": "mc",
+            "choices": [
+                "It constructs a type by removing specified keys from an object.",
+                "It constructs a type by making all keys read-only and immutable.",
+                "It extracts only the specified keys while dropping all others.",
+                "It makes all properties optional across the target interface."
+            ],
+            "a": "It constructs a type by removing specified keys from an object."
+        },
+        {
+            "t": "This utility type constructs a type with all properties of T set to optional.",
+            "module": 6,
+            "type": "id",
+            "a": "Partial<T>",
+            "alt": ["Partial", "Partial<T>", "partial"]
+        },
+        {
+            "t": "This utility type constructs a type by picking only the specified set of keys K from type T.",
+            "module": 6,
+            "type": "id",
+            "a": "Pick<T, K>",
+            "alt": ["Pick", "Pick<T,K>", "pick"]
+        },
+        {
+            "t": "This keyword is used to declare a base class that cannot be instantiated directly and must be subclassed.",
+            "module": 6,
+            "type": "id",
+            "a": "abstract",
+            "alt": ["abstract class", "abstract keyword"]
+        },
+        {
+            "t": "List four common built-in TypeScript utility types used to transform object shapes.",
+            "module": 6,
+            "type": "enum",
+            "ordered": false,
+            "a": ["Partial", "Readonly", "Pick", "Omit"],
+            "alt": [
+                ["Partial", "Partial<T>"],
+                ["Readonly", "Readonly<T>"],
+                ["Pick", "Pick<T, K>", "Pick<T,K>"],
+                ["Omit", "Omit<T, K>", "Omit<T,K>"]
+            ]
+        },
+        {
+            "t": "Abstract classes in TypeScript can be instantiated directly using the new keyword.",
+            "module": 6,
+            "type": "tf",
+            "a": "False"
+        }
+    ]
+}
